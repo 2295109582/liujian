@@ -1,0 +1,65 @@
+.details2{
+
+}
+
+.details2 .info{
+  padding: 20px;
+  background-color: #fff;
+}
+.details2 .info .infoBox{
+  float: left;
+}
+
+.details2 .info .infoBox h1{
+  font-size: 20px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.85);
+  margin: 0 0 16px 0;
+}
+.details2 .info .infoBox .infop{
+
+}
+
+.details2 .info .infoBox .infop p{
+  float: left;
+  width: 50%;
+}
+
+.details2 .info .operatingBox{
+  float: right;
+}
+
+.details2 .info .operatingBox .infot{
+  margin: 16px 0 0 16px;
+  float: right;
+  text-align: right;
+}
+
+
+.details2 .info .operatingBox .infot span{
+      color: rgba(0, 0, 0, 0.45);
+      font-size: 14px;
+}
+
+.details2 .info .operatingBox .infot h1{
+  color: rgba(0, 0, 0, 0.85);
+  margin-top: 5px;
+  font-size: 20px;
+}
+
+.details2 .noData{
+  text-align: center;
+  padding: 30px;
+  color:#aaae;
+}
+
+.details2 .noData i{
+  font-size: 24px;
+  margin-right: 16px;
+  position: relative;
+  top: 3px;
+}
+
+.ant-tabs-nav .ant-tabs-tab{
+      margin: 0 ;
+}

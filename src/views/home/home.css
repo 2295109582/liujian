@@ -1,0 +1,124 @@
+
+.home{
+
+}
+
+
+.home .info{
+  /* margin-bottom: 20px; */
+}
+.home .info .infop{
+  float: left;
+}
+
+
+.home .info .infop .avatar{
+  width: 72px;
+  height: 72px;
+  float: left;
+}
+.home .info .infop .avatar img{
+  width: 100%;
+}
+
+
+
+.home .info .infop .infot{
+  float: left;
+  line-height: 36px;
+  margin-left: 20px;
+}
+
+.home .info .infop .infot h4{
+  font-size: 20px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.85);
+  margin:0;
+}
+
+
+.home .info .infop .infot p{
+  margin: 0;
+  color:#888;
+}
+
+
+
+
+
+.home .info .items{
+  float: right;
+  line-height: 36px;
+}
+.home .info .item{
+  float: left;
+  text-align: right;
+  padding-left: 36px;
+}
+.home .info .item h4{
+  color: rgba(0, 0, 0, 0.85);
+    font-size: 30px;
+    margin: 0;
+}
+.home .info .item p{
+margin: 0;
+}
+
+
+
+
+.home .project{
+  background-color: #fff;
+  margin-bottom: 20px;
+}
+
+.home .project .item{
+  width: 33.33333333%;
+}
+.home .project .item .itemBox{
+
+}
+
+.home .project .item .name{
+  line-height: 24px;
+}
+.home .project .item .name img{
+  width: 24px;
+  height: 24px;
+  margin-right: 5px;
+}
+
+.home .project .item .itemp{
+  height: 44px;
+  line-height: 22px;
+    margin: 10px 0;
+}
+.home .project .item .itemp p{
+  margin:0;
+  font-size: 14px;
+  color:#888;
+
+}
+.home .project .item .p{
+  text-align: right;
+  font-size: 12px;
+  color:#aaa;
+}
+
+.home .project .team{
+
+}
+.home .project .team .item{
+  width: 100%;
+  margin-bottom: 25px;
+}
+.home .project .team img{
+  width: 24px;
+  height: 24px;
+  margin-right: 10px;
+}
+.home .project .team a{
+  line-height: 24px;
+}
+
+/**/

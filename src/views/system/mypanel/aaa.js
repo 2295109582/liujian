@@ -1,0 +1,18 @@
+[
+  {'name':'我的面板','url':'/mypanel/home0','iconType':'pie-chart'},
+  {'name':'OA办公','url':'/aaa/aaa','iconType':'desktop'},
+  {'name':'系统设置','iconType':'user','child':[{'name':'用户管理','url':'/set/userManagement'},
+  {'name':'菜单管理','child':
+    [{'name':'菜单管理','url':'set/menu'}]
+  },
+  {'name':'机构管理','url':'set/mechanism'},
+  {'name':'角色管理','url':'set/character'}]},
+  {'name':'系统维护','iconType':'team','child':
+    [
+      {'name':'地址码','url':'ddd'},
+      {'name':'行业类别','url':'eee'},
+      {'name':'抄表册管理','url':'fff'}
+    ]
+  },
+  {'name':'业扩管理','url':'1','iconType':'edit'}
+]

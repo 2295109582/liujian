@@ -1,0 +1,23 @@
+.ant-tabs.ant-tabs-card > .ant-tabs-bar .ant-tabs-tab{
+  border: none;
+  line-height: 44px;
+}
+.ant-tabs-nav .ant-tabs-tab-active{
+  font-weight: normal;
+}
+.ant-tabs-bar{
+  border-bottom: none;
+  margin: 0;
+}
+.ant-tabs.ant-tabs-card > .ant-tabs-bar .ant-tabs-tab{
+  padding-bottom: 1px;
+}
+.ant-tabs-nav-scroll{
+  /* background-color: #fff; */
+}
+.ant-tabs-nav-scroll{
+  height: 44px;
+}
+.ant-tabs.ant-tabs-card > .ant-tabs-bar .ant-tabs-nav-container{
+  height: 44px;
+}

@@ -1,0 +1,24 @@
+
+.details1{
+  padding: 20px;
+  background:#fff;
+}
+
+.details1 .box{
+
+}
+
+.details1 .box .title{
+  font-size: 16px;
+  padding-top: 10px;
+}
+.details1 .box .center{
+
+}
+.details1 .box .center p{
+  float: left;
+  padding-top: 16px;
+  margin: 0;
+  font-size: 14px;
+  width: 33%;
+}

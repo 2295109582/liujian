@@ -1,0 +1,38 @@
+
+.menu{
+  background-color:#fff;
+  padding:20px;
+}
+.menu .add{
+  width:100%;
+  margin:24px 0;
+}
+
+.menu .header{
+
+}
+
+.menu .header>div{
+  width: 16.66666%;
+  float: left;
+}
+.menu .header .name{
+
+}
+.menu .header .url{
+
+}
+
+.menu .header .sorting{
+
+}
+
+.menu .title{
+  padding: 12px 0 12px 40px;
+}
+
+.menu .title span{
+  float: left;
+  width: 16.66666%;
+  display: block;
+}
