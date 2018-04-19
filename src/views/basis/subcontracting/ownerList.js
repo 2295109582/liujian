@@ -2,8 +2,7 @@ import React,{Component} from 'react';
 import Table from "@c/table";
 import Search from '@c/search';
 
-import Form from './form';
-import View from './view';
+import OwnerForm from './ownerForm';
 
 
 import { Divider} from 'antd';
@@ -13,45 +12,28 @@ class List extends Component{
 
   constructor(){
     super(...arguments);
+    let {data} = this.props;
 
     this.state = {
       search: [
         {
           type: "input",
-          name: "ownerCode",
-          label: "K3业主单位编码"
-        },
-        // {
-        //   type: "User",
-        //   name: "ownerCode",
-        //   label: "付款单位"
-        // },
-        {
-          type: "input",
-          name: "ownerName",
-          label: "业主单位名称"
+          name: "id",
+          label: "分包Id",
+          visible:false,
+          defaultValue:data.id
         },
         {
           type: "input",
-          name: "taxpayerSite",
-          label: "纳税人地址"
-        },
+          name: "teamName",
+          label: "班组名称"
+        }
       ],
       columns : [
-        {
-          title: "K3业主单位编码",dataIndex: "ownerCode",
-          render: (text, row) => (
-            <a onClick={() => this.view(row)}>
-              {text}
-            </a>
-          )
-        },
-        { title: "业主单位名称", dataIndex: "ownerName"},
-        { title: "纳税人地址", dataIndex: "taxpayerSite"},
-        { title: "纳税人识别号", dataIndex: "taxpayerNum"},
-        { title: "电话", dataIndex: "tel" },
-        { title: "开户行", dataIndex: "openBank" },
-        { title: "银行账号", dataIndex: "bankAccount" },
+        { title: "班组名称",dataIndex: "teamName"},
+        { title: "班组类别", dataIndex: "teamSort"},
+        { title: "班组负责人", dataIndex: "teamleader"},
+        { title: "联系电话", dataIndex: "tel"},
         { title: "操作", dataIndex: "action", render: (text, row) => (
           <div>
             <a onClick={()=>this.edit(row)}>编辑</a>
@@ -78,17 +60,15 @@ class List extends Component{
 
   }
 
-  view = (data)=>{
-    this.props.add(`查看${data.ownerCode}`,<View params={{id:data.id}}  paramsUrl="/owner/detail"  />);
-  }
-
   edit = (data) =>{
-    this.props.add(`编辑${data.ownerCode}`,<Form params={{id:data.id}} paramsUrl="/owner/detail" submitUrl="/owner/update" />);
+    console.log(data)
+    this.props.add(`编辑${data.teamName}`,<OwnerForm data={this.props.data} params={{id:data.id}} paramsUrl="/team/detail" submitUrl="/team/update" />);
   }
 
   add = ()=>{
-    this.props.add('新增业主单位',<Form submitUrl="/owner/add" />);
+    this.props.add('新增班主信息',<OwnerForm submitUrl="/team/add" data={this.props.data} />);
   }
+
 
   render(){
     let {search,columns,toolbar} = this.state;
@@ -97,9 +77,9 @@ class List extends Component{
       <div className="content">
         <Search data={search} ref="search" click={()=>this.refs.table.refresh()} />
         <Table
-          url="/owner/show"
-          deleteUrl="/owner/delete"
-          deleteKey="ownerCode"
+          url="/team/show"
+          deleteUrl="/team/delete"
+          deleteKey="teamName"
           columns={columns}
           queryParams={()=>this.refs.search.getData()}
           toolbar={toolbar}

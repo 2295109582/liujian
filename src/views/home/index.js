@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Card,Row,Col,Divider,List, Avatar} from 'antd';
+import { Card,Row,Col,List, Avatar} from 'antd';
 //import Table from '@c/table';
 
 import EchartsTest from '@c/echarts/echartsTest';
@@ -13,46 +13,46 @@ class Home extends Component {
 
   render() {
 
-    var columns=[
-      { title: 'id', dataIndex: 'id', key: 'id'},
-      { title: '申请编号', dataIndex: 'name', key: 'name',render:(text )=>(
-        <a>{text}</a>
-      ) },
-      { title: '流程名称', dataIndex: 'version', key: 'version'},
-      { title: '流程发起人', dataIndex: 'upgradeNum', key: 'upgradeNum'},
-      { title: '创建时间', dataIndex: 'creator', key: 'creator'},
-      {
-        title: '操作',
-        dataIndex: 'operation',
-        key: 'operation',
-        render: () => (
-          <span className="table-operation">
-            <a>任务办理</a>
-            <Divider type="vertical" />
-            <a>跟踪</a>
-          </span>
-        ),
-      }
-    ]
-
-    var dataSource =  [];
-    for (let i = 0; i < 66; ++i) {
-      dataSource.push({
-        key: i,
-        id: i,
-        name: '180124',
-        platform: '抄表执行',
-        version: '抄表计费',
-        upgradeNum: 'admins',
-        creator: '2018-01-24 14:55:42'
-      });
-    }
-
-    let TableConfig = {
-      autoLoad:true,
-      columns:columns,
-      dataSource:dataSource
-    }
+    // var columns=[
+    //   { title: 'id', dataIndex: 'id', key: 'id'},
+    //   { title: '申请编号', dataIndex: 'name', key: 'name',render:(text )=>(
+    //     <a>{text}</a>
+    //   ) },
+    //   { title: '流程名称', dataIndex: 'version', key: 'version'},
+    //   { title: '流程发起人', dataIndex: 'upgradeNum', key: 'upgradeNum'},
+    //   { title: '创建时间', dataIndex: 'creator', key: 'creator'},
+    //   {
+    //     title: '操作',
+    //     dataIndex: 'operation',
+    //     key: 'operation',
+    //     render: () => (
+    //       <span className="table-operation">
+    //         <a>任务办理</a>
+    //         <Divider type="vertical" />
+    //         <a>跟踪</a>
+    //       </span>
+    //     ),
+    //   }
+    // ]
+    //
+    // var dataSource =  [];
+    // for (let i = 0; i < 66; ++i) {
+    //   dataSource.push({
+    //     key: i,
+    //     id: i,
+    //     name: '180124',
+    //     platform: '抄表执行',
+    //     version: '抄表计费',
+    //     upgradeNum: 'admins',
+    //     creator: '2018-01-24 14:55:42'
+    //   });
+    // }
+    //
+    // let TableConfig = {
+    //   autoLoad:true,
+    //   columns:columns,
+    //   dataSource:dataSource
+    // }
 
 
 
@@ -80,7 +80,7 @@ class Home extends Component {
     //var grid2 = {xs:24,sm:24,md:24,lg:24,xl:16};
     //var grid3 = {xs:24,sm:24,md:24,lg:24,xl:8};
 
-    
+
     return (
       <div className="home">
         <Card bordered={false} className="info">

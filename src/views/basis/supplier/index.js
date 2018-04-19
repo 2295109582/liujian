@@ -15,7 +15,7 @@ class Index extends Component{
 
     return(
       <Tabs ref="tabs" panes={[
-        { title: '专业分包列表', content: <List add={this.add} />,closable: false }
+        { title: '业主单位列表', content: <List add={this.add} />,closable: false }
       ]}  />
     )
   }

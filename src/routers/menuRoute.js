@@ -21,13 +21,13 @@ let menuRoute = [
       },
       {
         "name": "供应商",
-        "url": "",
+        "url": "/basis/supplier",
         "breadcrumb":["基础信息","供应商"]
       },
       {
-        "name": "公司信息",
-        "url": "",
-        "breadcrumb":["基础信息","公司信息"]
+        "name": "工程基本信息",
+        "url": "/basis/projectInfo",
+        "breadcrumb":["基础信息","工程基本信息"]
       },
       {
         "name": "班组信息",

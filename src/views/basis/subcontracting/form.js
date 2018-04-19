@@ -1,33 +1,31 @@
 import React,{Component} from 'react';
+import Form from '@c/form';
 
-import AppForm from '@c/form';
-
-
-class Form extends Component{
+export default class AppForm extends Component{
 
     state = {
       data:[
         {
           type: "input",
-          name: "ownerCode",
-          label: "K3业主单位编码",
+          name: "subunitNo",
+          label: "K3分包单位编码",
           rules: [{ required: true }]
         },
         {
           type: "input",
-          name: "ownerName",
-          label: "业主单位名称",
+          name: "subunitName",
+          label: "分包单位名称",
           rules: [{ required: true}]
         },
         {
           type: "input",
-          name: "taxpayerSite",
+          name: "taxaddress",
           label: "纳税人地址",
           rules: [{ required: true}],
         },
         {
           type: "input",
-          name: "taxpayerNum",
+          name: "taxno",
           label: "纳税人识别号",
           rules: [{ required: true}]
         },
@@ -40,20 +38,30 @@ class Form extends Component{
         {
           type:"select",
           options:[
-            {value:1,label:"中国银行"},
-            {value:2,label:"建设银行"},
-            {value:3,label:"工商银行"},
-            {value:4,label:"交通银行"},
-            {value:5,label:"农业银行"},
+            {value:"中国银行",label:"中国银行"},
+            {value:"建设银行",label:"建设银行"},
+            {value:"工商银行",label:"工商银行"},
+            {value:"交通银行",label:"交通银行"},
+            {value:"农业银行",label:"农业银行"},
           ],
-          name: "openBank",
+          name: "bankId",
           label: "开户行",
           rules: [{ required: true}]
         },
         {
           type: "input",
-          name: "bankAccount",
+          name: "bankaccount",
           label: "银行账号",
+          rules: [{ required: true}]
+        },
+        {
+          type:"select",
+          options:[
+            {value:"劳务",label:"劳务"},
+            {value:"材料",label:"材料"}
+          ],
+          name: "subunitType",
+          label: "分包类别",
           rules: [{ required: true}]
         }
       ],
@@ -65,22 +73,22 @@ class Form extends Component{
         },
         {
           type: "input",
-          name: "linkTel",
+          name: "linkphone",
           label: "联系电话"
         },
         {
           type: "input",
-          name: "linkFax",
+          name: "fax",
           label: "传真"
         },
         {
           type: "input",
-          name: "linkEmail",
+          name: "email",
           label: "电子邮箱"
         },
         {
           type:"textarea",
-          name: "noteMsg",
+          name: "remarks",
           label: "备注信息"
         }
       ]
@@ -97,10 +105,8 @@ class Form extends Component{
 
     return(
       <div className="content">
-        <AppForm data={data} hideData={hideData} params={params} paramsUrl={paramsUrl} submitUrl={submitUrl} />
+        <Form data={data} hideData={hideData} params={params} paramsUrl={paramsUrl} submitUrl={submitUrl} />
       </div>
     )
   }
 }
-
-export default Form;

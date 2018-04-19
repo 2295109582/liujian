@@ -1,5 +1,5 @@
 import React,{Component} from 'react';
-import { Table,Modal, Button,message } from 'antd';
+import { Table,Modal,message } from 'antd';
 import Bottons from '@c/bottons';
 
 const confirm = Modal.confirm;

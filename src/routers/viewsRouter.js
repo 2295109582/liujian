@@ -11,11 +11,20 @@ class ViewsRouter extends Component{
         />
         {/*基础信息*/}
         <Route path="/basis/ownerUnit" exact render={(props)=> //业主单位列表
-          asy(import(/* webpackChunkName: "views/basis/ownerUnit/index" */'@/views/basis/ownerUnit'),props)}
+          asy(import(/* webpackChunkName: "views/basis/ownerUnit" */'@/views/basis/ownerUnit'),props)}
         />
 
         <Route path="/basis/subcontracting" render={(props)=> //专业分包
           asy(import(/* webpackChunkName: "views/basis/subcontracting" */'@/views/basis/subcontracting'),props)}
+        />
+
+        <Route path="/basis/supplier" render={(props)=> //供应商
+          asy(import(/* webpackChunkName: "views/basis/supplier" */'@/views/basis/supplier'),props)}
+        />
+
+
+        <Route path="/basis/projectInfo" render={(props)=> // 工程基本信息
+          asy(import(/* webpackChunkName: "views/basis/projectInfo" */'@/views/basis/projectInfo'),props)}
         />
 
         <Route path="/mypanel/home0" render={(props)=> // 系统/表格页

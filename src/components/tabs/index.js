@@ -1,11 +1,11 @@
 import React,{Component} from 'react';
-import { Tabs, Button } from 'antd';
+import { Tabs } from 'antd';
 
 import './index.css';
 
 const TabPane = Tabs.TabPane;
 
-class AppTabs extends React.Component {
+class AppTabs extends Component {
   constructor(props) {
     super(props);
     this.newTabIndex = 0;

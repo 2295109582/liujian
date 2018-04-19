@@ -1,9 +1,9 @@
 import React,{Component} from 'react';
-import {Form,Input,Checkbox,Radio,DatePicker,Select,Icon,Button,message,Row,Col,Divider,Modal,Spin} from 'antd';
+import {Form as AppForm,Input,Checkbox,Radio,DatePicker,Select,Icon,Button,message,Row,Col,Divider,Modal,Spin} from 'antd';
 
 import './index.css';
 
-const FormItem = Form.Item;
+const FormItem = AppForm.Item;
 const RadioGroup = Radio.Group;
 const { TextArea } = Input;
 const CheckboxGroup = Checkbox.Group;
@@ -35,16 +35,34 @@ class NormalForm extends Component {
   }
 
   componentDidMount(){
+    this.setData(()=>this.defaultValue());
+  }
+
+  defaultValue = ()=>{
+    let {data,hideData} = this.state;
+    let currentData = [...data,...hideData];
+    let values = {};
+    currentData.forEach((item,i)=>{
+      if(item.defaultValue!==undefined){
+        values[item.name] = item.defaultValue;
+      }
+    })
+    this.setFieldsValue(values);
+  }
+
+  setData = (fn)=>{
     let {params,paramsUrl} = this.props;
     if(params["id"]){
       this.load();
       window.uc.axios.post(paramsUrl, params)
       .then((data) => {
         this.setFieldsValue(data.data);
+        fn&&fn();
         this.unload();
       })
+    }else{
+      fn&&fn();
     }
-
   }
 
   load = ()=>{
@@ -55,11 +73,11 @@ class NormalForm extends Component {
     this.setState({loading:false})
   }
 
-  nullToUndefined = (data)=>{
+  deleteNull = (data)=>{
     let result = {...data};
     for(var attr in result){
       if(result[attr] === null){
-        result[attr] = undefined;
+        delete result[attr];
       }
     }
     return result;
@@ -67,7 +85,7 @@ class NormalForm extends Component {
 
   setFieldsValue = (values)=>{ //设置值
     let { form } = this.props;
-    let result = this.nullToUndefined(values);
+    let result = this.deleteNull(values);
     form.setFieldsValue(result);
   }
 
@@ -82,13 +100,14 @@ class NormalForm extends Component {
   createList = (data) =>{   //创建列表
 
     let { getFieldDecorator } = this.props.form; //表单验证方法
-    let {formItemLayout,tailFormItemLayout,formItemLayout2,tailFormItemLayout2} = this.state;
+    let {formItemLayout} = this.state;
     var list = data.map((item,index)=>{  //根据传进来的数据进行遍历渲染不同的组件
       var formItemCom;  //组件变量
-      var readOnly;
-      if(item.readOnly === "true"){readOnly = true;}
 
       switch (item.type) {
+        case "input":   //输入框
+          formItemCom =  (<Input readOnly={item.readonly} placeholder={item.placeholder} prefix={item.icon&&<Icon type={item.icon} style={{ color: 'rgba(0,0,0,.25)' }} />} size={item.size} />) ;
+          break;
         case "datePicker":   //日期
           formItemCom =  (<DatePicker format={item.moment} style={{width:'100%'}} />) ;
           break;
@@ -99,22 +118,22 @@ class NormalForm extends Component {
           formItemCom =  (<Select style={{width:'100%'}}>{options}</Select>) ;
           break;
         case "textarea":  //文本框
-          formItemCom =  (<TextArea readOnly={readOnly} placeholder="写点什么吧!" autosize={{ minRows: 4, maxRows: 6 }}  />) ;
+          formItemCom =  (<TextArea readOnly={item.readonly} placeholder="写点什么吧!" autosize={{ minRows: 4, maxRows: 6 }}  />) ;
           break;
         case "check":  //复选框
-          formItemCom =  (<CheckboxGroup readOnly={readOnly} className="clearfix" options={item.options} />) ;
+          formItemCom =  (<CheckboxGroup readOnly={item.readonly} className="clearfix" options={item.options} />) ;
           break;
         case "radio":  //单选框
-          formItemCom =  (<RadioGroup readOnly={readOnly} options={item.options} />) ;
+          formItemCom =  (<RadioGroup readOnly={item.readonly} options={item.options} />) ;
           break;
         default:
-          formItemCom =  (<Input placeholder={item.placeholder} prefix={item.icon&&<Icon type={item.icon} style={{ color: 'rgba(0,0,0,.25)' }} />} size={item.size} readOnly={readOnly} />) ;
+
       }
       //条件验证
       let defaultRules = [];
       if(item.type === "textarea"){
         defaultRules = [{max:255,message: "不能超过255个字符"}];
-      }else if(item.type === undefined || item.type === "input"){
+      }else if(item.type === "input"){
         defaultRules = [{max:18,message: "不能超过18个字符"}];
       }
       let r = item.rules || [];
@@ -126,7 +145,7 @@ class NormalForm extends Component {
       let rules = [...r,...defaultRules]
 
       return (               //返回每一项表单,设置验证规则,都是父级传进来
-        <Col span={10} key={index} offset={1} style={{minHeight:64}}>
+        <Col span={10} key={index} offset={1} style={{minHeight:64,display:(item.visible===false?'none':'block')}}>
           <FormItem  {...formItemLayout} label={item.label}>
             {getFieldDecorator(item.name, {rules})(formItemCom)}
           </FormItem>
@@ -148,7 +167,7 @@ class NormalForm extends Component {
     return (
       <Spin spinning={loading}>
         <div style={{padding:'30px 0'}}>
-          <Form>
+          <AppForm>
             <Row gutter={50}>
               {this.createList(data)}
               {hideData.length>1?(
@@ -173,16 +192,16 @@ class NormalForm extends Component {
                 </div>
               </Col>
             </Row>
-          </Form>
+          </AppForm>
         </div>
       </Spin>
     );
   }
 }
 //包装过的带有验证的form表单
-const WrappedNormalForm = Form.create()(NormalForm);
+const WrappedNormalForm = AppForm.create()(NormalForm);
 
-class AppForm extends Component{
+class Form extends Component{
 
 
   constructor(){
@@ -248,6 +267,9 @@ class AppForm extends Component{
       this.unload();
       message.info(data.msg);
     })
+    .catch(()=>{
+      this.unload();
+    })
   }
 
 
@@ -293,7 +315,7 @@ class AppForm extends Component{
   }
 }
 
-AppForm.defaultProps = {
+Form.defaultProps = {
   url: "", //服务器获取参数的地址
   data: [],  //自己写进去的数据
   hideData:[],  //默认隐藏的数据
@@ -348,4 +370,4 @@ AppForm.defaultProps = {
   callback: () => {}
 };
 
-export default AppForm;
+export default Form;

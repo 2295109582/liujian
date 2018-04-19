@@ -31,54 +31,67 @@ class NormalForm extends Component {
     e.preventDefault();
   }
 
-  createList = ()=>{
-      let { getFieldDecorator } = this.props.form; //表单验证方法
-      let { dis } = this.state;
-      let { data,formItemLayout, grid } = this.props; //获取传进来的数据
 
-      let list = data.map((item,index)=>{  //根据传进来的数据进行遍历渲染不同的组件
-        let formItemCom;  //组件变量
-        switch (item.type) {
-          case "input":  //输入框 默认项
-            formItemCom =  (<Input placeholder='请输入' prefix={item.icon&&<Icon type={item.icon} style={{ color: 'rgba(0,0,0,.25)' }} />} size={item.size} />) ;
-            break;
-          case "datePicker":   //日期
-            formItemCom =  (<DatePicker format={item.moment} style={{width:'100%'}} />) ;
-            break;
-          case "select":   //选择框
-            let options = item.options.map((optionsItem,optionsi)=>{
-                return <Select.Option key={optionsi}  value={optionsItem.value}>{optionsItem.label}</Select.Option>
-            })
-            formItemCom =  (<Select placeholder="请选择" style={{width:'100%'}}>{options}</Select>) ;
-            break;
-          default:
-            formItemCom =  (<Search placeholder="请选择或输入" enterButton onSearch={(value) => {this.refs.query.show(item.label,item.type,item.name)}}  style={{ width: '100%' }}  />) ;
-        }
+  createData = (newData,visible)=>{
+    let { getFieldDecorator } = this.props.form; //表单验证方法
+    let { dis } = this.state;
+    let { formItemLayout, grid } = this.props; //获取传进来的数据
+
+    let list = newData.map((item,index)=>{  //根据传进来的数据进行遍历渲染不同的组件
+      let formItemCom;  //组件变量
+      switch (item.type) {
+        case "input":  //输入框 默认项
+          formItemCom =  (<Input placeholder='请输入' prefix={item.icon&&<Icon type={item.icon} style={{ color: 'rgba(0,0,0,.25)' }} />} size={item.size} />) ;
+          break;
+        case "datePicker":   //日期
+          formItemCom =  (<DatePicker format={item.moment} style={{width:'100%'}} />) ;
+          break;
+        case "select":   //选择框
+          let options = item.options.map((optionsItem,optionsi)=>{
+              return <Select.Option key={optionsi}  value={optionsItem.value}>{optionsItem.label}</Select.Option>
+          })
+          formItemCom =  (<Select placeholder="请选择" style={{width:'100%'}}>{options}</Select>) ;
+          break;
+        default:
+          formItemCom =  (<Search placeholder="请选择或输入" enterButton onSearch={(value) => {this.refs.query.show(item.label,item.type,item.name)}}  style={{ width: '100%' }}  />) ;
+      }
 
 
-        return (               //返回每一项表单,设置验证规则,都是父级传进来
+      return (               //返回每一项表单,设置验证规则,都是父级传进来
+        <Col key={index} {...grid} style={{display:(visible || index>1?dis:null)}}>
           <FormItem key={index} {...formItemLayout} label={item.label}>
             {getFieldDecorator(item.name)(formItemCom)}
           </FormItem>
-        )
-      });
+        </Col>
+      )
+    });
 
 
-      let layoutList = [];  //列表集合,布局部分
+    return list;
+  }
 
-      for(var i=0;i<list.length;i++){
-        layoutList.push(
-          <Col key={i} {...grid} style={{display:(i>1?dis:null)}}>
-            {list[i]}
-          </Col>
-        )
-      }
-
-    return layoutList;
+  createList = ()=>{
+      let { data } = this.props; //获取传进来的数据
+      let newData = [];
+          data.forEach((item,i)=>{
+            if(item.visible || item.visible === undefined){
+              newData.push(item);
+            }
+          })
+      return this.createData(newData);
 
   }
 
-
+  createVisibleLit = ()=>{
+    let { data } = this.props; //获取传进来的数据
+    let newData = [];
+        data.forEach((item,i)=>{
+          if(item.visible === false){
+            newData.push(item);
+          }
+        })
+    return this.createData(newData,'none');
+  }
 
 
   render() {
@@ -90,6 +103,7 @@ class NormalForm extends Component {
       <div>
         <Form className='form' layout={'horizontal'} onSubmit={this.handleSubmit}>
           <Row gutter={48}>
+            {this.createVisibleLit()}
             {this.createList()}
             <Col {...grid}>
               <div style={{paddingTop:5,marginBottom:24}}>
@@ -147,11 +161,37 @@ class AppSearch extends Component{
     return val;
   }
 
+  deleteNull = (data)=>{
+    let result = {...data};
+    for(var attr in result){
+      if(result[attr] === null){
+        delete result[attr];
+      }
+    }
+    return result;
+  }
 
-  //设置值
-  setFieldsValue = (valuse)=>{
-    var {form} = this.refs;
-    form.setFieldsValue(valuse);
+  componentDidMount(){
+    this.defaultValue();
+  }
+
+  defaultValue = ()=>{
+    let {data} = this.props;
+    let currentData = [...data];
+    let values = {};
+    currentData.forEach((item,i)=>{
+      if(item.defaultValue!==undefined){
+        values[item.name] = item.defaultValue;
+      }
+    })
+    this.setFieldsValue(values);
+  }
+
+
+  setFieldsValue = (values)=>{ //设置值
+    let { form } = this.refs;
+    let result = this.deleteNull(values);
+    form.setFieldsValue(result);
   }
 
   //主动提交表单

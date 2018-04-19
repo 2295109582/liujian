@@ -98,7 +98,7 @@ class FormView extends Component{
   }
 
   render(){
-    let {params,paramsUrl,loading} = this.state;
+    let {loading} = this.state;
     let list = this.createList();
     return(
       <Spin spinning={loading}>
