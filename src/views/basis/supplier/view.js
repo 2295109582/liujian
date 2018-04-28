@@ -7,19 +7,15 @@ class View extends Component{
   state = {
     data:[
       {
-        name: "ownerCode",
-        label: "K3业主单位编码"
+        name: "supplierNo",
+        label: "K3供应商编码"
       },
       {
-        name: "ownerName",
-        label: "业主单位名称"
+        name: "supplierName",
+        label: "供应商名称"
       },
       {
-        name: "taxpayerSite",
-        label: "纳税人地址"
-      },
-      {
-        name: "taxpayerNum",
+        name: "taxno",
         label: "纳税人识别号"
       },
       {
@@ -27,31 +23,35 @@ class View extends Component{
         label: "电话"
       },
       {
-        name: "openBank",
+        name: "bankId",
         label: "开户行"
       },
       {
-        name: "bankAccount",
+        name: "bankaccount",
         label: "银行账号"
+      },
+      {
+        name: "taxaddress",
+        label: "纳税人地址"
       },
       {
         name: "linkman",
         label: "联系人"
       },
       {
-        name: "linkTel",
+        name: "linkphone",
         label: "联系电话"
       },
       {
-        name: "linkFax",
+        name: "fax",
         label: "传真"
       },
       {
-        name: "linkEmail",
+        name: "email",
         label: "电子邮箱"
       },
       {
-        name: "noteMsg",
+        name: "remarks",
         label: "备注信息"
       }
     ]

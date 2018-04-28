@@ -1,9 +1,9 @@
 import React,{Component} from 'react';
 
-import AppForm from '@c/form';
+import Form from '@c/form';
 
 
-class Form extends Component{
+class AppForm extends Component{
 
     state = {
       data:[
@@ -18,12 +18,6 @@ class Form extends Component{
           name: "ownerName",
           label: "业主单位名称",
           rules: [{ required: true}]
-        },
-        {
-          type: "input",
-          name: "taxpayerSite",
-          label: "纳税人地址",
-          rules: [{ required: true}],
         },
         {
           type: "input",
@@ -55,7 +49,13 @@ class Form extends Component{
           name: "bankAccount",
           label: "银行账号",
           rules: [{ required: true}]
-        }
+        },
+        {
+          type: "textarea",
+          name: "taxpayerSite",
+          label: "纳税人地址",
+          rules: [{ required: true}],
+        },
       ],
       hideData:[
         {
@@ -93,14 +93,17 @@ class Form extends Component{
   render(){
 
     let {data,hideData} = this.state;
-    let {params,paramsUrl,submitUrl} = this.props;
 
     return(
       <div className="content">
-        <AppForm data={data} hideData={hideData} params={params} paramsUrl={paramsUrl} submitUrl={submitUrl} />
+        <Form data={data} hideData={hideData} {...this.props} submitCallback={()=>{
+            if(this.props.params){
+              this.props.remove();
+            };
+          }} />
       </div>
     )
   }
 }
 
-export default Form;
+export default AppForm;

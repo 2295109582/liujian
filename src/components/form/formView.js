@@ -7,13 +7,16 @@ class FormView extends Component{
   constructor(){
     super(...arguments);
 
-    let {params,paramsUrl,loading,dataList} = this.props;
+    let {params,paramsUrl,loading,dataList,tableList} = this.props;
+
 
     this.state = {
       params,
       paramsUrl,
       loading,
-      dataList
+      dataList,
+      tableList,
+      table:null
     }
 
   }
@@ -26,33 +29,45 @@ class FormView extends Component{
   dataTolist = (result)=>{
     let {data} = this.props; //根据data渲染数据
     let dataList = [];
-
-
-
     for(var i=0;i<data.length;i++){
-      console.log(data[i])
       dataList.push({
         label:data[i]["label"],
         value:(result[data[i]["name"]] || "--")
       })
     }
-
-//     let data2 = [
-//       {label: "用户编号",value:"15566399"},
-//       {label: "用户名称",value:"阿凡达"},
-//       {label: "用水地址",value:"仓山区"},
-//       {label: "水费年月",value:"2018-10-10"},
-//       {label: "用户角色",value:"部门管理员，收费员"},
-//       {label: "是否允许登录",value:"是"},
-//       {label: "备注",value:`详解springmvc 接收json对象的两种方式
-// 原生js编写基于面向对象的分页组件`},
-//       {label: "电话号码",value:"188-8888-8888"},
-//       {label: "身份证号码",value:"51303019991010"}
-//     ]
-
-
-
     return dataList;
+  }
+
+  setTableData = (data)=>{  //表格数据回填
+    if(data){
+      let tableList = [...this.state.tableList];
+      tableList.forEach((item,i)=>{
+        tableList[i]["dataSource"] = data[item['name']]
+      });
+      this.setState({
+        tableList
+      },()=>{
+        this.setTableList();
+      })
+    }else{
+      this.setTableList();
+    }
+  }
+
+  setTableList = ()=>{    //生成表格
+    let tableList = [...this.state.tableList];
+    tableList = tableList.map((item,i)=>{
+      let Table = item.view;
+      return <Table {...item.props} dataSource={item.dataSource} toolbar={false} action={false} check={false} key={i} />
+    });
+
+    this.setState({
+      table:null
+    },()=>{
+      setTimeout(()=>{
+        this.setState({table:tableList})
+      })
+    })
 
   }
 
@@ -62,7 +77,9 @@ class FormView extends Component{
       this.load();
       window.uc.axios.post(paramsUrl, params)
       .then((result) => {
-        this.setState({dataList:this.dataTolist(result.data)});
+        let list = result.data;
+        this.setTableData(list);
+        this.setState({dataList:this.dataTolist(list)});
         this.unload();
       })
     }
@@ -98,16 +115,21 @@ class FormView extends Component{
   }
 
   render(){
-    let {loading} = this.state;
+    let {loading,table} = this.state;
     let list = this.createList();
     return(
       <Spin spinning={loading}>
         <div>
           <Row gutter={50}>
             {list}
+            {table === null?null:(
+              <Col span={20} offset={4}>
+                {table}
+              </Col>
+            )}
             {loading?null:(
               <Col span={20} offset={4}>
-                <Button icon="reload" type="primary" onClick={this.refresh}>刷新</Button>
+                <Button icon="reload" type="primary" onClick={this.refresh} style={{marginTop:24}}>刷新</Button>
               </Col>
             )}
           </Row>
@@ -123,6 +145,7 @@ FormView.defaultProps = {
   loading:true,  //获取状态
   data:[],  //数据
   dataList:[], //渲染的数据列表
+  tableList:[], //表格数据
   formItemLayout:{
     labelCol: {
       xs: { span: 24 },

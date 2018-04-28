@@ -3,6 +3,8 @@ import { Button,Input,Checkbox,Icon,message } from 'antd';
 import logo from '@/common/img/logo.svg';
 import '@/utils/storage.js';
 
+import './index.css';
+
 export default class Login extends Component{
 
   constructor(props){

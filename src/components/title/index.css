@@ -1,0 +1,18 @@
+
+.Title{
+  line-height: 70px;
+  font-size: 16px;
+  padding-left: 20px;
+  position:relative;
+}
+.Title::before{
+  display: block;
+  content: '';
+  width: 4px;
+  height: 20px;
+  border-radius: 4px;
+  background-color: #40a9ff;
+  position:absolute;
+  left: 0;
+  top:1px;
+}

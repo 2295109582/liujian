@@ -9,25 +9,19 @@ class Form extends Component{
       data:[
         {
           type: "input",
-          name: "ownerCode",
-          label: "K3业主单位编码",
+          name: "supplierNo",
+          label: "K3供应商编码",
           rules: [{ required: true }]
         },
         {
           type: "input",
-          name: "ownerName",
-          label: "业主单位名称",
+          name: "supplierName",
+          label: "供应商单位名称",
           rules: [{ required: true}]
         },
         {
           type: "input",
-          name: "taxpayerSite",
-          label: "纳税人地址",
-          rules: [{ required: true}],
-        },
-        {
-          type: "input",
-          name: "taxpayerNum",
+          name: "taxno",
           label: "纳税人识别号",
           rules: [{ required: true}]
         },
@@ -44,16 +38,22 @@ class Form extends Component{
             {value:2,label:"建设银行"},
             {value:3,label:"工商银行"},
             {value:4,label:"交通银行"},
-            {value:5,label:"农业银行"},
+            {value:5,label:"农业银行"}
           ],
-          name: "openBank",
+          name: "bankId",
           label: "开户行",
           rules: [{ required: true}]
         },
         {
           type: "input",
-          name: "bankAccount",
+          name: "bankaccount",
           label: "银行账号",
+          rules: [{ required: true}]
+        },
+        {
+          type: "textarea",
+          name: "taxaddress",
+          label: "纳税人地址",
           rules: [{ required: true}]
         }
       ],
@@ -65,39 +65,40 @@ class Form extends Component{
         },
         {
           type: "input",
-          name: "linkTel",
+          name: "linkphone",
           label: "联系电话"
         },
         {
           type: "input",
-          name: "linkFax",
+          name: "fax",
           label: "传真"
         },
         {
           type: "input",
-          name: "linkEmail",
+          name: "email",
           label: "电子邮箱"
         },
         {
           type:"textarea",
-          name: "noteMsg",
+          name: "remarks",
           label: "备注信息"
         }
       ]
     }
 
 
-
-
-
   render(){
 
     let {data,hideData} = this.state;
-    let {params,paramsUrl,submitUrl} = this.props;
+
 
     return(
       <div className="content">
-        <AppForm data={data} hideData={hideData} params={params} paramsUrl={paramsUrl} submitUrl={submitUrl} />
+        <AppForm data={data} hideData={hideData} {...this.props} submitCallback={()=>{
+            if(this.props.params){
+              this.props.remove();
+            };
+          }} />
       </div>
     )
   }

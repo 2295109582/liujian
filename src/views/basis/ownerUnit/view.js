@@ -58,11 +58,10 @@ class View extends Component{
   }
 
   render(){
-    let {params,paramsUrl} = this.props;
     let {data} = this.state;
     return(
       <div className="content">
-        <FormView data={data} params={params} paramsUrl={paramsUrl} />
+        <FormView data={data} {...this.props}  />
       </div>
     )
   }

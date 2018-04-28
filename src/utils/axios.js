@@ -14,7 +14,8 @@ axios.interceptors.request.use(function (config) {
 
   let token = window.uc.storage.get("userInfo")["token"];
   config.headers['Content-type'] = 'application/x-www-form-urlencoded';
-  config.url = `${config.url}?token=${token}`
+  //config.url = `/liujian${config.url}?token=${token}`;
+  config.url = `${config.url}?token=${token}`;
   config.data = formData;
   return config;
 }, function (error) {
@@ -33,7 +34,7 @@ axios.interceptors.response.use(function (response) {
         message.error(response.data.msg);
       }
     };
-    message.error("响应数据出错！");
+    //message.error("响应数据出错！");
   },
   function (err) {
     // 对响应错误做点什么

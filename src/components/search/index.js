@@ -43,7 +43,7 @@ class NormalForm extends Component {
         case "input":  //输入框 默认项
           formItemCom =  (<Input placeholder='请输入' prefix={item.icon&&<Icon type={item.icon} style={{ color: 'rgba(0,0,0,.25)' }} />} size={item.size} />) ;
           break;
-        case "datePicker":   //日期
+        case "date":   //日期
           formItemCom =  (<DatePicker format={item.moment} style={{width:'100%'}} />) ;
           break;
         case "select":   //选择框
@@ -56,11 +56,15 @@ class NormalForm extends Component {
           formItemCom =  (<Search placeholder="请选择或输入" enterButton onSearch={(value) => {this.refs.query.show(item.label,item.type,item.name)}}  style={{ width: '100%' }}  />) ;
       }
 
+      let rules = [];
+      if(item.type !== "date"){
+        rules.push({ pattern:/^[A-Za-z0-9\u4e00-\u9fa5]+$/,message:"请不要骚操作！"});
+      }
 
       return (               //返回每一项表单,设置验证规则,都是父级传进来
-        <Col key={index} {...grid} style={{display:(visible || index>1?dis:null)}}>
-          <FormItem key={index} {...formItemLayout} label={item.label}>
-            {getFieldDecorator(item.name)(formItemCom)}
+        <Col key={index} {...grid} style={{display:(visible || index>1?dis:null),minHeight:64}}>
+          <FormItem {...formItemLayout} label={item.label}>
+            {getFieldDecorator(item.name,{rules})(formItemCom)}
           </FormItem>
         </Col>
       )
@@ -94,10 +98,13 @@ class NormalForm extends Component {
   }
 
 
+
   render() {
     //如果不在这个方法里面写渲染列表,则更改数据较为麻烦,输入框内容不会被改变
     let { dis } = this.state;
     let { data,search,reset, grid,setFieldsValue } = this.props; //获取传进来的数据
+
+
 
     return (
       <div>
@@ -203,12 +210,21 @@ class AppSearch extends Component{
     });
   }
 
+  getDataLen = ()=>{
+    let { data } = this.props; //获取传进来的数据
+    let len = 0;
+    data.forEach((item,i)=>{
+      if(!(item.visible === false)){
+        len++;
+      }
+    })
+    return len;
+  }
+
   render(){
     let {data,formItemLayout,grid} = this.props;
-
-
     return(
-      <div className="searchWrap">
+      <div className="searchWrap" style={{display:(this.getDataLen() === 0?'none':'block')}}>
         <WrappedNormalForm
           data={data}
           handleSubmit={this.handleSubmit}

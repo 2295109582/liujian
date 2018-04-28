@@ -15,31 +15,25 @@ class NormalForm extends Component {
   constructor(){
     super(...arguments);
 
-    let {data,hideData,formItemLayout,tailFormItemLayout,formItemLayout2,tailFormItemLayout2} = this.props;
+    let {formItemLayout,tailFormItemLayout} = this.props;
 
     this.state = {
-      data,
-      hideData,
       formItemLayout,
       tailFormItemLayout,
-      formItemLayout2,
-      tailFormItemLayout2,
       formClearData:window.uc.storage.get("formClearData"),  //提交后是否清空表单
       formSubmitPrompt:window.uc.storage.get("formSubmitPrompt"),  //提交时的确认
-      formVisible:window.uc.storage.get("formVisible"), //隐藏的表单
-      loading:false
+      formVisible:window.uc.storage.get("formVisible") //隐藏的表单
     }
 
-  //  this.list = this.createList(data);
-  //  this.hideList = this.createList(hideData);
   }
 
   componentDidMount(){
     this.setData(()=>this.defaultValue());
   }
 
+
   defaultValue = ()=>{
-    let {data,hideData} = this.state;
+    let {data,hideData} = this.props;
     let currentData = [...data,...hideData];
     let values = {};
     currentData.forEach((item,i)=>{
@@ -56,27 +50,33 @@ class NormalForm extends Component {
       this.load();
       window.uc.axios.post(paramsUrl, params)
       .then((data) => {
-        this.setFieldsValue(data.data);
+        let list = data.data;
+        this.props.setTableData(list);
+        this.setFieldsValue(list);
         fn&&fn();
         this.unload();
       })
     }else{
+      this.props.setTableData();
       fn&&fn();
     }
   }
 
   load = ()=>{
-    this.setState({loading:true})
+    this.props.load();
   }
 
   unload = ()=>{
-    this.setState({loading:false})
+    this.props.unload();
   }
 
   deleteNull = (data)=>{
     let result = {...data};
     for(var attr in result){
       if(result[attr] === null){
+        delete result[attr];
+      }
+      if(typeof result[attr] === "object"){
         delete result[attr];
       }
     }
@@ -101,6 +101,7 @@ class NormalForm extends Component {
 
     let { getFieldDecorator } = this.props.form; //表单验证方法
     let {formItemLayout} = this.state;
+    let {span} = this.props;
     var list = data.map((item,index)=>{  //根据传进来的数据进行遍历渲染不同的组件
       var formItemCom;  //组件变量
 
@@ -127,14 +128,14 @@ class NormalForm extends Component {
           formItemCom =  (<RadioGroup readOnly={item.readonly} options={item.options} />) ;
           break;
         default:
-
+          alert("其他类型")
       }
       //条件验证
       let defaultRules = [];
       if(item.type === "textarea"){
         defaultRules = [{max:255,message: "不能超过255个字符"}];
       }else if(item.type === "input"){
-        defaultRules = [{max:18,message: "不能超过18个字符"}];
+        defaultRules = [{max:20,message: "不能超过20个字符"},{pattern:/^[A-Za-z0-9\u4e00-\u9fa5]+$/,message:"请不要骚操作！"}];
       }
       let r = item.rules || [];
       r.forEach((ritem,i)=>{
@@ -142,10 +143,12 @@ class NormalForm extends Component {
           r[i].message = `${item.label}是必须！`;
         }
       })
-      let rules = [...r,...defaultRules]
+
+      let rules = [...r,...defaultRules];
+
 
       return (               //返回每一项表单,设置验证规则,都是父级传进来
-        <Col span={10} key={index} offset={1} style={{minHeight:64,display:(item.visible===false?'none':'block')}}>
+        <Col span={span} key={index} offset={1} style={{minHeight:64,display:(item.visible===false?'none':'block')}}>
           <FormItem  {...formItemLayout} label={item.label}>
             {getFieldDecorator(item.name, {rules})(formItemCom)}
           </FormItem>
@@ -162,44 +165,37 @@ class NormalForm extends Component {
 
   render() {
     //如果不在这个方法里面写渲染列表,则更改数据较为麻烦,输入框内容不会被改变
-    let { data,hideData ,formClearData,formSubmitPrompt,formVisible,loading} = this.state; //获取传进来的数据
+    let { data,hideData ,formClearData,formSubmitPrompt,formVisible} = this.props; //获取传进来的数据
 
     return (
-      <Spin spinning={loading}>
-        <div style={{padding:'30px 0'}}>
-          <AppForm>
-            <Row gutter={50}>
-              {this.createList(data)}
-              {hideData.length>1?(
-                <Col span={18} offset={4}>
-                  <Divider>
-                    <a onClick={()=>{this.setCheck("formVisible")}}>
-                      {formVisible?<div>收起<Icon type="up" /></div>:<div>更多信息<Icon type="down" /></div>}
-                    </a>
-                  </Divider>
-                </Col>
-              ):null}
-              <Col span={24}  style={{display:(formVisible===true?'block':'none')}}>
-                <Row gutter={50}>
-                  {this.createList(hideData)}
-                </Row>
+      <div>
+        <AppForm>
+          <Row gutter={50}>
+            {this.createList(data)}
+            {hideData.length>1?(
+              <Col span={18} offset={4}>
+                <Divider>
+                  <a onClick={()=>{this.setCheck("formVisible")}}>
+                    {formVisible?<div>收起<Icon type="up" /></div>:<div>更多信息<Icon type="down" /></div>}
+                  </a>
+                </Divider>
               </Col>
-              <Col span={10} offset={4} style={{marginTop:20}}>
-                <Button type="primary" icon="check-circle-o" onClick={this.props.save} style={{marginRight:24}} loading={this.props.submitLoading}>提交</Button>
-                <div style={{marginTop:30}}>
-                  <Checkbox onChange={()=>{this.setCheck("formSubmitPrompt")}} checked={formSubmitPrompt}>提交确认</Checkbox>
-                  <Checkbox onChange={()=>{this.setCheck("formClearData")}} checked={formClearData}>提交后清空表单数据</Checkbox>
-                </div>
-              </Col>
-            </Row>
-          </AppForm>
-        </div>
-      </Spin>
+            ):null}
+            <Col span={24}  style={{display:(formVisible===true?'block':'none')}}>
+              <Row gutter={50}>
+                {this.createList(hideData)}
+              </Row>
+            </Col>
+          </Row>
+        </AppForm>
+      </div>
     );
   }
 }
 //包装过的带有验证的form表单
 const WrappedNormalForm = AppForm.create()(NormalForm);
+
+
 
 class Form extends Component{
 
@@ -207,21 +203,76 @@ class Form extends Component{
   constructor(){
     super(...arguments);
 
-    let {submitLoading} = this.props;
+    let {submitLoading,loading,tableList} = this.props;
+
+    this.tables = {};
+
     this.state = {
-      submitLoading
+      submitLoading,
+      loading,
+      tableList,
+      table:null
     }
 
   }
 
-  load = ()=>{
+  // componentDidMount(){
+  //   this.setTableData();
+  // }
+
+  saveTableData = (key,value)=>{   //保存表格数据
+    this.tables[key] = JSON.stringify(value);
+  }
+
+  setTableData = (data)=>{  //表格数据回填
+    if(data){
+      let tableList = [...this.state.tableList];
+      tableList.forEach((item,i)=>{
+        tableList[i]["dataSource"] = data[item['name']]
+      });
+      this.setState({
+        tableList
+      },()=>{
+        this.setTableList();
+      })
+    }else{
+      this.setTableList();
+    }
+  }
+
+  setTableList = ()=>{    //生成表格
+    let tableList = [...this.state.tableList];
+    tableList = tableList.map((item,i)=>{
+      let Table = item.view;
+      return <Table {...item.props} dataSource={item.dataSource} name={`${item.name}s`} saveTableData={this.saveTableData} key={i} />
+    });
+
+    this.setState({
+      table:tableList
+    })
+
+  }
+
+  btnLoad = ()=>{
     this.setState({submitLoading:true})
   }
 
-  unload = ()=>{
+  btnUnload = ()=>{
     this.setState({submitLoading:false})
   }
 
+  load = ()=>{
+    this.setState({loading:true})
+  }
+
+  unload = ()=>{
+    this.setState({loading:false})
+  }
+
+  setFieldsValue = (values)=>{ //设置值
+    let { form } = this.refs;
+    form.setFieldsValue(values);
+  }
 
   confirm = (fn)=>{
     Modal.confirm({
@@ -230,9 +281,6 @@ class Form extends Component{
       cancelText: '取消',
       onOk() {
         fn&&fn();
-        // return new Promise((resolve, reject) => {
-        //   fn(resolve);
-        // });
       }
     });
   }
@@ -254,21 +302,24 @@ class Form extends Component{
   }
 
   savefn = (values)=>{
-    let {submitUrl,params} = this.props;
-    let data = {...values};
+
+    let {submitUrl,params,submitCallback,refresh} = this.props;
+    let data = {...values,...this.tables};
     if(params["id"]){
       data = {...params,...data}
     }
-    this.load();
+    this.btnLoad();
     window.uc.axios.post(submitUrl, data)
     .then((data) => {
       let formClearData = window.uc.storage.get("formClearData");   //表单添加后清空数据
       if(formClearData){ this.resetFields(); };
-      this.unload();
+      this.btnUnload();
       message.info(data.msg);
+      submitCallback();
+      refresh();
     })
     .catch(()=>{
-      this.unload();
+      this.btnUnload();
     })
   }
 
@@ -282,6 +333,15 @@ class Form extends Component{
     });
   }
 
+  getData = ()=>{
+    let value;
+    this.doSubmit((values)=>{
+      value = values;
+    });
+    return value;
+  }
+
+
   resetFields = ()=>{  //表单重置
     var {form} = this.refs;
     form.resetFields();
@@ -290,39 +350,59 @@ class Form extends Component{
 
 
   render(){
-    let {submitLoading} = this.state;
-    let { url, data, callback,hideData,formItemLayout,tailFormItemLayout,formItemLayout2,tailFormItemLayout2,params,paramsUrl} = this.props;
+    let {submitLoading,loading,table} = this.state;
+    let { data, callback,hideData,formItemLayout,tailFormItemLayout,params,paramsUrl,subunitBtn,span} = this.props;
     return(
-      <div>
-        <WrappedNormalForm
-          ref="form"
-          setIscarryOn={this.setIscarryOn}
-          url={url}
-          save={this.save}
-          data={data}
-          params={params}
-          paramsUrl={paramsUrl}
-          hideData={hideData}
-          callback={callback}
-          formItemLayout={formItemLayout}
-          formItemLayout2={formItemLayout2}
-          tailFormItemLayout2={tailFormItemLayout2}
-          tailFormItemLayout={tailFormItemLayout}
-          submitLoading={submitLoading}
-          />
+      <div style={{padding:(subunitBtn===true?'30px 0':'0')}}>
+        <Spin spinning={loading}>
+          <WrappedNormalForm
+            ref="form"
+            setTableData={this.setTableData}
+            load={this.load}
+            unload={this.unload}
+            span={span}
+            save={this.save}
+            data={data}
+            params={params}
+            paramsUrl={paramsUrl}
+            hideData={hideData}
+            callback={callback}
+            formItemLayout={formItemLayout}
+            tailFormItemLayout={tailFormItemLayout}
+            />
+            <Row gutter={50}>
+              <Col span={18} offset={4}>
+                {table}
+              </Col>
+              {subunitBtn===true?(
+                <Col span={18} offset={4} style={{marginTop:24,textAlign:'right'}}>
+                  <Button type="primary" icon="check-circle-o" onClick={this.save} loading={submitLoading}>提交</Button>
+                </Col>
+              ):null}
+            </Row>
+        </Spin>
       </div>
     )
   }
 }
 
+{/* <Checkbox onChange={()=>{this.setCheck("formSubmitPrompt")}} checked={formSubmitPrompt}>提交确认</Checkbox>
+<Checkbox onChange={()=>{this.setCheck("formClearData")}} checked={formClearData}>提交后清空表单数据</Checkbox> */}
+
 Form.defaultProps = {
   url: "", //服务器获取参数的地址
   data: [],  //自己写进去的数据
   hideData:[],  //默认隐藏的数据
+  subunitBtn:true,
   params:{}, //查询条件
   paramsUrl:"", //查询地址
   submitUrl: "", //数据提交的地址
+  loading:false, //加载状态
   submitLoading:false,  //提交状态
+  tableList:[], //内嵌的表格
+  submitCallback:()=>{}, //提交后的回调函数
+  refresh:()=>{}, //执行父级传入的刷新方法
+  span:10, //24/10
   formItemLayout:{
     labelCol: {
       xs: { span: 24 },
@@ -334,28 +414,6 @@ Form.defaultProps = {
     }
   },
   tailFormItemLayout:{
-    wrapperCol:{
-      xs: {
-        span: 24,
-        offset: 0,
-      },
-      sm: {
-        span: 16,
-        offset: 8,
-      }
-    }
-  },
-  formItemLayout2:{
-    labelCol: {
-      xs: { span: 24 },
-      sm: { span: 4 },
-    },
-    wrapperCol: {
-      xs: { span: 24 },
-      sm: { span: 20 },
-    }
-  },
-  tailFormItemLayout2:{
     wrapperCol:{
       xs: {
         span: 24,

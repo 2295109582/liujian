@@ -5,23 +5,29 @@ import './index.css';
 
 const TabPane = Tabs.TabPane;
 
+
+class HighOrder extends Component{
+  render(){
+    let {view,add,remove} = this.props;
+    let Com = view;
+    return(
+      <div>
+        <Com {...this.props.props} add={add} remove={remove}  />
+      </div>
+    )
+  }
+}
+
 class AppTabs extends Component {
   constructor(props) {
     super(props);
     this.newTabIndex = 0;
 
-    let {panes,activeKey} = this.props;
-
-    panes.forEach((item,i)=>{
-      this.newTabIndex++;
-      panes[i].key = `${this.newTabIndex}`;
-    })
-
     this.state = {
-      activeKey,
-      panes,
+      panes:[]
     };
   }
+
 
   onChange = (activeKey) => {
     this.setState({ activeKey });
@@ -29,13 +35,16 @@ class AppTabs extends Component {
   onEdit = (targetKey, action) => {
     this[action](targetKey);
   }
-  add = (title,content) => {
+  add = (title,content,closable) => {
     const panes = this.state.panes;
-    const activeKey = `newTab${this.newTabIndex++}`;
-    panes.push({ title: title, content: content, key: activeKey });
+    const activeKey = `${++this.newTabIndex}`;
+
+    panes.push({ title: title, content: <HighOrder add={this.add} remove={()=>{this.remove(activeKey)}} {...content} /> , key: activeKey,closable });
     this.setState({ panes, activeKey });
+    return activeKey;
   }
   remove = (targetKey) => {
+
     let activeKey = this.state.activeKey;
     let lastIndex;
     this.state.panes.forEach((pane, i) => {
@@ -49,6 +58,8 @@ class AppTabs extends Component {
     }
     this.setState({ panes, activeKey });
   }
+
+
   render() {
     return (
       <div>
@@ -66,13 +77,6 @@ class AppTabs extends Component {
   }
 }
 
-AppTabs.defaultProps = {
-  panes:[
-    { title: 'Tab 1', content: 'Content of Tab Pane 1', closable: false },
-    { title: 'Tab 2', content: 'Content of Tab Pane 2'}
-  ],
-  key:'1',
-  activeKey:'1'
-}
+
 
 export default AppTabs;

@@ -9,7 +9,7 @@ class Index extends Component{
 
   componentDidMount(){
     let {tabs} = this.refs;
-    tabs.add('业主单位列表',{
+    tabs.add('常用行业类别',{
       view:List
     },false)
   }

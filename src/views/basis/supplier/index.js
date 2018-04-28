@@ -6,17 +6,18 @@ import List from './list';
 
 class Index extends Component{
 
-  add = (title,content)=>{
+
+  componentDidMount(){
     let {tabs} = this.refs;
-    tabs.add(title,content);
+    tabs.add('供应商信息列表',{
+      view:List
+    },false)
   }
 
   render(){
 
     return(
-      <Tabs ref="tabs" panes={[
-        { title: '业主单位列表', content: <List add={this.add} />,closable: false }
-      ]}  />
+      <Tabs ref="tabs" />
     )
   }
 }

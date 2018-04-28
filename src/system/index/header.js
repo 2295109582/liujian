@@ -1,38 +1,26 @@
 import React,{Component} from 'react';
-import { Layout,Badge,Icon,Avatar, Radio,Row,Col ,Switch,notification,Menu, Dropdown } from 'antd';
+import { Layout,Badge,Icon,Avatar, Radio,Row,Col ,Switch,notification,Menu, Dropdown,Select } from 'antd';
 import screenfull from 'screenfull';
 const { Header } = Layout;
-
 
 class AppSetting extends Component{
   render(){
     return(
-      <Row gutter={20}>
-        <Col xs={12} style={{marginTop:'20px'}}>
-          滚动：<Switch defaultChecked />
+      <Row gutter={20} style={{textAlign:'right'}}>
+        <Col xs={20} style={{marginTop:'20px'}}>
+          表单提交确认：<Switch defaultChecked />
         </Col>
-        <Col xs={12} style={{marginTop:'20px'}}>
-          边框：<Switch />
+        <Col xs={20} style={{marginTop:'20px'}}>
+          表单提交后清空表单数据：<Switch />
         </Col>
-        <Col xs={12} style={{marginTop:'20px'}}>
-          分页：<Switch  />
+        <Col xs={20} style={{marginTop:'20px'}}>
+          表格删除提示：<Switch  />
         </Col>
-        <Col xs={12} style={{marginTop:'20px'}}>
-          页头：<Switch />
+        <Col xs={20} style={{marginTop:'20px'}}>
+          新增和编辑后自动刷新表格：<Switch />
         </Col>
-        <Col xs={12} style={{marginTop:'20px'}}>
-          详情：<Switch />
-        </Col>
-        <Col xs={12} style={{marginTop:'20px'}}>
-          选框：<Switch />
-        </Col>
-        <Col xs={24} style={{marginTop:'20px'}}>
-          大小：
-          <Radio.Group size="default">
-            <Radio.Button value="default">Default</Radio.Button>
-            <Radio.Button value="middle">Middle</Radio.Button>
-            <Radio.Button value="small">Small</Radio.Button>
-          </Radio.Group>
+        <Col xs={20} style={{marginTop:'20px'}}>
+          搜索条件是否显示全部：<Switch />
         </Col>
       </Row>
     )
@@ -128,26 +116,6 @@ export default class AppHeader extends Component{
             </a>
           </div>
           <div className="headerFn clearfix">
-            {/* <div className="headerTab">
-              <span className="textRight">Tab</span>
-              <Switch defaultChecked />
-            </div>
-            <div className="headerTab">
-              <Select defaultValue="lucy">
-                <Option value="jack">
-                  <Icon type="aliwangwang-o" />
-                </Option>
-                <Option value="lucy">
-                  <Icon type="aliwangwang-o" />
-                </Option>
-                <Option value="disabled">
-                  <Icon type="aliwangwang-o" />
-                </Option>
-                <Option value="Yiminghe">
-                  <Icon type="aliwangwang-o" />
-                </Option>
-              </Select>
-            </div> */}
             <div className="headerTab" onClick={this.toggleSetting}>
               <a><Icon type="setting" style={{color:'rgba(0, 0, 0, 0.65)'}} /></a>
             </div>
@@ -157,8 +125,8 @@ export default class AppHeader extends Component{
             <div className="headerTab">
               <Dropdown overlay={menu}>
                 <div>
-                  <Avatar src={avatar} style={{position:'relative',top:'10px'}} />
-                  <a style={{marginLeft:'10px'}}>{userName}</a>
+                  <Avatar src={"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1524914380552&di=caddc081bb46de209510d192458f16e8&imgtype=0&src=http%3A%2F%2Fwww.qqzhi.com%2Fuploadpic%2F2014-12-03%2F114912498.jpg"} style={{position:'relative',top:'10px'}} />
+                  <a style={{marginLeft:'10px'}}>{"周星驰"}</a>
                 </div>
               </Dropdown>
             </div>

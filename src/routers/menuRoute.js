@@ -30,21 +30,14 @@ let menuRoute = [
         "breadcrumb":["基础信息","工程基本信息"]
       },
       {
-        "name": "班组信息",
-        "url": "",
-        "breadcrumb":["基础信息","班组信息"]
-      },
-      {
-        "name": "工程基本信息",
-        "url": ""
-      },
-      {
         "name": "税率设置",
-        "url": ""
+        "url": "/basis/taxRate",
+        "breadcrumb":["基础信息","税率设置"]
       },
       {
-        "name": "设置工程经办会计",
-        "url": ""
+        "name": "常用行业类别",
+        "url": "/basis/industry",
+        "breadcrumb":["基础信息","常用行业类别"]
       },
     ]
   },

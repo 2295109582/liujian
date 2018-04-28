@@ -49,7 +49,7 @@ class Index extends Component{
 
   componentDidMount(){  //组件挂载完成调用resizeWindow
     this.resizeWindow();
-    window.addEventListener('resize',this.resizeWindow)
+    //window.addEventListener('resize',this.resizeWindow)
   }
 
   resizeWindow=()=>{ //屏幕宽度调整时切换布局

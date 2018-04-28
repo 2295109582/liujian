@@ -2,12 +2,13 @@ import React,{Component} from 'react';
 
 
 import FormView from '@c/form/formView';
+import StaticTable from "@c/table/staticTable";
 
 //
 export default class View extends Component{
 
-  state = {
-    data:[
+  info = {
+    infoData:[
       {
         name: "subunitNo",
         label: "K3分包单位编码"
@@ -63,12 +64,45 @@ export default class View extends Component{
     ]
   }
 
+  teams = {
+    teamColumns : [
+      { title: "班组名称",dataIndex: "teamName"},
+      { title: "班组类别", dataIndex: "teamSort"},
+      { title: "班组负责人", dataIndex: "teamleader"},
+      { title: "联系电话", dataIndex: "teamTel"}
+    ]
+  }
+
+  constructor(){
+    super(...arguments);
+
+    let {teamColumns} = this.teams;
+
+    this.state = {
+      tableList:[
+        {
+          name:"team",
+          view:StaticTable,
+          props:{
+            title:"班组信息",
+            columns:teamColumns
+          }
+        }
+      ]
+    }
+  }
+
+
   render(){
-    let {params,paramsUrl} = this.props;
-    let {data} = this.state;
+    let {infoData} = this.info;
+    let {tableList} = this.state;
     return(
       <div className="content">
-        <FormView data={data} params={params} paramsUrl={paramsUrl} />
+        <FormView
+          data={infoData}
+          {...this.props}
+          tableList={tableList}
+        />
       </div>
     )
   }

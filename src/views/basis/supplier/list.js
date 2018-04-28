@@ -18,89 +18,91 @@ class List extends Component{
       search: [
         {
           type: "input",
-          name: "ownerCode",
-          label: "K3业主单位编码"
-        },
-        // {
-        //   type: "User",
-        //   name: "ownerCode",
-        //   label: "付款单位"
-        // },
-        {
-          type: "input",
-          name: "ownerName",
-          label: "业主单位名称"
+          name: "supplierNo",
+          label: "K3供应商编码"
         },
         {
           type: "input",
-          name: "taxpayerSite",
+          name: "supplierName",
+          label: "供应商单位名称"
+        },
+        {
+          type: "input",
+          name: "taxaddress",
           label: "纳税人地址"
         },
       ],
       columns : [
-        {
-          title: "K3业主单位编码",dataIndex: "ownerCode",
-          render: (text, row) => (
-            <a onClick={() => this.view(row)}>
-              {text}
-            </a>
-          )
-        },
-        { title: "业主单位名称", dataIndex: "ownerName"},
-        { title: "纳税人地址", dataIndex: "taxpayerSite"},
-        { title: "纳税人识别号", dataIndex: "taxpayerNum"},
+        { title: "K3供应商编码",dataIndex: "supplierNo"},
+        { title: "供应商单位名称", dataIndex: "supplierName"},
+        { title: "纳税人地址", dataIndex: "taxaddress"},
+        { title: "纳税人识别号", dataIndex: "taxno"},
         { title: "电话", dataIndex: "tel" },
-        { title: "开户行", dataIndex: "openBank" },
-        { title: "银行账号", dataIndex: "bankAccount" },
-        { title: "操作", dataIndex: "action", render: (text, row) => (
-          <div>
-            <a onClick={()=>this.edit(row)}>编辑</a>
-              <Divider type="vertical" />
-            <a onClick={()=>this.refs.table.delete(row)}>删除</a>
-          </div>
-        ) },
+        { title: "开户行", dataIndex: "bankId" },
+        { title: "银行账号", dataIndex: "bankaccount" }
       ],
-      toolbar : [
-        {
-          icon: "plus",
-          text: "新增",
+      action:{
+        edit:this.edit,
+        view:this.view
+      },
+      toolbar : {
+        add:{
           visible: () => true,
           click:this.add
-        },
-        {
-          icon: "delete",
-          text: "删除",
-          visible: (selectedRowKeys) => selectedRowKeys.length > 0,
-          click: () => this.refs.table.delete()
         }
-      ]
+      }
     }
 
   }
 
   view = (data)=>{
-    this.props.add(`查看${data.ownerCode}`,<View params={{id:data.id}}  paramsUrl="/owner/detail"  />);
+    this.props.add(`查看${data.supplierNo}`,{
+      view:View,
+      props:{
+        params:{id:data.id},
+        paramsUrl:"/supplier/detail"
+      }
+    });
   }
 
   edit = (data) =>{
-    this.props.add(`编辑${data.ownerCode}`,<Form params={{id:data.id}} paramsUrl="/owner/detail" submitUrl="/owner/update" />);
+    this.props.add(`编辑${data.supplierNo}`,{
+      view:Form,
+      props:{
+        params:{id:data.id},
+        paramsUrl:"/supplier/detail",
+        submitUrl:"/supplier/update",
+        refresh:this.refresh
+      }
+    });
   }
 
   add = ()=>{
-    this.props.add('新增业主单位',<Form submitUrl="/owner/add" />);
+    this.props.add('新增供应商',{
+      view:Form,
+      props:{
+        submitUrl:"/supplier/add",
+        refresh:this.refresh
+      }
+    });
+  }
+
+  refresh = ()=>{
+    this.refs.table.refresh();
   }
 
   render(){
-    let {search,columns,toolbar} = this.state;
+    let {search,columns,toolbar,action} = this.state;
 
     return(
       <div className="content">
         <Search data={search} ref="search" click={()=>this.refs.table.refresh()} />
         <Table
-          url="/owner/show"
-          deleteUrl="/owner/delete"
-          deleteKey="ownerCode"
+          url="/supplier/show"
+          deleteUrl="/supplier/delete"
+          deleteKey="supplierNo"
           columns={columns}
+          action={action}
           queryParams={()=>this.refs.search.getData()}
           toolbar={toolbar}
           ref="table"

@@ -22,25 +22,33 @@ class ViewsRouter extends Component{
           asy(import(/* webpackChunkName: "views/basis/supplier" */'@/views/basis/supplier'),props)}
         />
 
-
         <Route path="/basis/projectInfo" render={(props)=> // 工程基本信息
           asy(import(/* webpackChunkName: "views/basis/projectInfo" */'@/views/basis/projectInfo'),props)}
         />
 
+        <Route path="/basis/taxRate" render={(props)=> // 税率设置
+          asy(import(/* webpackChunkName: "views/basis/taxRate" */'@/views/basis/taxRate'),props)}
+        />
+
+        <Route path="/basis/industry" render={(props)=> // 常用行业类别
+          asy(import(/* webpackChunkName: "views/basis/industry" */'@/views//basis/industry'),props)}
+        />
+
+
         <Route path="/mypanel/home0" render={(props)=> // 系统/表格页
-          asy(import(/* webpackChunkName: "views/system/mypanel/home0" */'@/views/system/mypanel'),props)}
+          asy(import(/* webpackChunkName: "views/system/mypanel" */'@/views/system/mypanel'),props)}
         />
         <Route path="/process/process" render={(props)=> // 系统/流程页
-          asy(import(/* webpackChunkName: "views/system/process/process" */'@/views/system/process'),props)}
+          asy(import(/* webpackChunkName: "views/system/process" */'@/views/system/process'),props)}
         />
         <Route path="/systemSet/menu/menu" render={(props)=> // 系统/菜单
-          asy(import(/* webpackChunkName: "views/system/systemSet/menu/menu" */'@/views/system/systemSet/menu'),props)}
+          asy(import(/* webpackChunkName: "views/system/systemSet/menu" */'@/views/system/systemSet/menu'),props)}
         />
         <Route path="/details1/details" render={(props)=> // 系统/详情页1
-          asy(import(/* webpackChunkName: "views/system/details1/index" */'@/views/system/details1'),props)}
+          asy(import(/* webpackChunkName: "views/system/details1" */'@/views/system/details1'),props)}
         />
         <Route path="/details2/details" render={(props)=> // 系统/详情页2
-          asy(import(/* webpackChunkName: "views/system/details2/index" */'@/views/system/details2'),props)}
+          asy(import(/* webpackChunkName: "views/system/details2" */'@/views/system/details2'),props)}
         />
         <Route render={(props)=> // 404
           asy(import(/* webpackChunkName: "views/system/404" */'@/views/system/404'),props)}

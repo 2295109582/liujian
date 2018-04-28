@@ -2,6 +2,9 @@ import React,{Component} from 'react';
 
 import img404 from '@/common/img/404.svg';
 
+import './index.css';
+
+
 class My404 extends Component{
   render(){
     return(
