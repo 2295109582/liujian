@@ -56,7 +56,7 @@ AppModal.defaultProps = {
   width:"520px",
   destroyOnClose:true, //关闭时销毁内容
   visible:false,  //可见性
-  title:null,  //标题
+  title:"标题",  //标题
   onOk:()=>false  //返回true就关闭弹出层
 }
 

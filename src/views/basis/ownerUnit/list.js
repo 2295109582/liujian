@@ -6,7 +6,7 @@ import Form from './form';
 import View from './view';
 
 
-import { Divider} from 'antd';
+
 
 
 class List extends Component{
@@ -21,11 +21,6 @@ class List extends Component{
           name: "ownerCode",
           label: "K3业主单位编码"
         },
-        // {
-        //   type: "User",
-        //   name: "ownerCode",
-        //   label: "付款单位"
-        // },
         {
           type: "input",
           name: "ownerName",
@@ -43,41 +38,50 @@ class List extends Component{
         { title: "纳税人地址", dataIndex: "taxpayerSite"},
         { title: "纳税人识别号", dataIndex: "taxpayerNum"},
         { title: "电话", dataIndex: "tel" },
-        { title: "开户行", dataIndex: "openBank" },
+        { title: "开户行", dataIndex: "openBank",dic:"bank_code" },
         { title: "银行账号", dataIndex: "bankAccount" }
       ],
-      action:{
-        edit:this.edit,
-        view:this.view
-      },
       toolbar : {
         add:{
           visible: () => true,
           click:this.add
+        },
+        edit:{
+          visible: (selectedRowKeys) => selectedRowKeys.length === 1,
+          click:this.edit
+        },
+        view:{
+          visible: (selectedRowKeys) => selectedRowKeys.length === 1,
+          click:this.view
         }
       }
     }
 
   }
 
-  view = (data)=>{
-    this.props.add(`查看${data.ownerCode}`,{
+  swiper = ()=>{
+    this.refresh();
+  }
+
+  view =  (selectedRowKeys,selectedRows, allData) =>{
+    let row = selectedRows[0];
+    this.props.add(`查看${row.ownerCode}`,{
       view:View,
       props:{
-        params:{id:data.id},
+        params:{id:row.id},
         paramsUrl:"/owner/detail"
       }
     });
   }
 
-  edit = (data) =>{
-    this.props.add(`编辑${data.ownerCode}`,{
+  edit = (selectedRowKeys,selectedRows, allData) =>{
+    let row = selectedRows[0];
+    this.props.add(`编辑${row.ownerCode}`,{
       view:Form,
       props:{
-        params:{id:data.id},
+        params:{id:row.id},
         paramsUrl:"/owner/detail",
         submitUrl:"/owner/update",
-        refresh:this.refresh
       }
     })
   }
@@ -87,8 +91,7 @@ class List extends Component{
     this.props.add('新增业主单位',{
       view:Form,
       props:{
-        submitUrl:"/owner/add",
-        refresh:this.refresh
+        submitUrl:"/owner/add"
       }
     })
   }
@@ -99,7 +102,7 @@ class List extends Component{
   }
 
   render(){
-    let {search,columns,action,toolbar} = this.state;
+    let {search,columns,toolbar} = this.state;
 
     return(
       <div className="content">
@@ -109,7 +112,6 @@ class List extends Component{
           deleteUrl="/owner/delete"
           deleteKey="ownerCode"
           columns={columns}
-          action={action}
           queryParams={()=>this.refs.search.getData()}
           toolbar={toolbar}
           ref="table"

@@ -1,11 +1,14 @@
 import React,{Component} from 'react';
 import { LocaleProvider,Icon } from 'antd';
 import zhCN from 'antd/lib/locale-provider/zh_CN';
+import moment from 'moment';
+import 'moment/locale/zh-cn';
+
 import AppMenuItem from './menu';
 import AppHeader from './header';
 import Router from '@/routers';
 
-
+moment.locale('zh-cn');
 // window.addEventListener('beforeunload',(e)=>{
 //   var e=window.event||e;
 //   e.returnValue=("确定离开当前页面吗？");
@@ -88,7 +91,7 @@ class Index extends Component{
   }
 
   render(){
-    let copyright = window.uc.appConfig["copyright"];
+    //let copyright = window.uc.appConfig["copyright"];
     return(
       <LocaleProvider locale={zhCN}>
         <div id="wrap">
@@ -101,7 +104,7 @@ class Index extends Component{
             <div id="tabs" ref="tabs">
               <Router />
             </div>
-            <div id="footer">{copyright}</div>
+            {/* <div id="footer">{copyright}</div> */}
           </div>
         </div>
       </LocaleProvider>

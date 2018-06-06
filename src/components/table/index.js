@@ -1,5 +1,5 @@
 import React,{Component} from 'react';
-import { Table,Modal,message,Divider } from 'antd';
+import { Table,Modal,message } from 'antd';
 import Bottons from '@c/bottons';
 
 
@@ -8,69 +8,55 @@ const confirm = Modal.confirm;
 class AppTable extends Component{
   constructor(){
     super(...arguments);
-    let {loading,selectedRowKeys,dataSource,pagination,columns,action,scroll,toolbar} = this.props;
-
-    let {edit,view} = action;
-
-      if(action){
-        columns.push({
-          title: "操作", dataIndex: "action",render: (text, row) => (
-            <div>
-              {edit !== undefined?(
-                <span>
-                  <a onClick={()=>edit(row)}>编辑</a>
-                  <Divider type="vertical" />
-                </span>
-              ):null}
-              {view !== undefined?(
-                <span>
-                  <a onClick={()=>view(row)}>查看</a>
-                </span>
-              ):null}
-              {action.delete===false?null:(
-                <span>
-                  <Divider type="vertical" />
-                  <a onClick={()=>this.delete(row)}>删除</a>
-                </span>
-              )}
-            </div>
-          )
-        })
-      }
+    let {loading,selectedRowKeys,dataSource,pagination,columns,scroll,toolbar,selectedRows} = this.props;
 
     if(scroll){
       let len = columns.length;
-      let w = (1500 - 300)/(len-2);
+      let w = (2000 - 150)/(len-1);
       columns.forEach((item,i)=>{
         if(i === 0){
           columns[0].fixed = 'left';
           columns[0].width = 150;
-        }else if(i === len - 1){
-          columns[len-1].fixed = 'right';
-          columns[len-1].width = 150;
-          columns[len-1].align = 'center';
         }else{
-          columns[i].render= (text, row) => (
-            <span className="textOverflow">{text}</span>
-          )
           columns[i].width = w;
         }
         columns[i]["key"] = columns[i]["dataIndex"];
       })
     }
 
-    if(!toolbar.delete === false){
-      toolbar.delete = {
-        visible: (rowKeys) => rowKeys.length > 0,
-        click:() => this.delete()
-      }
+    if(toolbar.delete !== false){
+      toolbar =  Object.assign({
+        delete:{
+          visible: (rowKeys) => rowKeys.length > 0,
+          click:() => this.delete()
+        }
+      },toolbar)
     }
+
+
+    columns.forEach((item,i)=>{
+      if(item.dic){
+        let dic = window.uc.dic(item.dic);
+        columns[i].render = (text,row,index)=>{
+          for(var i=0;i<dic.length;i++){
+            if(text === dic[i].value){
+              if(item.click){
+                return <a onClick={()=>item.click(text,row)}>{dic[i].label}</a>
+              }
+              return dic[i].label
+            }
+          }
+          return text;
+        }
+      }
+    })
 
 
     this.state = {
       loading,
       toolbar,
       columns,
+      selectedRows,
       selectedRowKeys,
       dataSource,
       pagination
@@ -153,7 +139,7 @@ class AppTable extends Component{
     this.setState({loading:false})
   }
 
-  refresh = ()=>{    //去网络请求数据
+  refresh = (deleteKey)=>{    //去网络请求数据
     const {url,queryParams} = this.props;
     if(!url){
       this.unload();
@@ -163,19 +149,74 @@ class AppTable extends Component{
     if(query === undefined){message.warning("搜索条件验证不通过！");  return;}
     let {pagination} = this.state;
     this.load();
-    window.uc.axios.post(url, {...query,...pagination})
+    let formdata;
+    if(pagination === false){
+      formdata = {...query};
+    }else{
+      formdata = {...query,...pagination};
+    }
+    window.uc.axios.post(url,formdata)
     .then((data)=>{
-      const {rows} = data;
-      let pagination = {...this.state.pagination};
-      pagination = Object.assign(pagination,{
-        current:data.current,
-        pageSize:data.pageSize,
-        total:data.total
+      let rows;
+      let pagination = this.state.pagination;
+
+      if(data.pageSize){
+        rows = data.rows;
+      }else{
+        rows = data.data;
+      };
+
+      if(pagination === false){
+        pagination = {
+          pageSize:rows.length,
+          showSizeChanger:false,   //是否可以改变 pageSize
+          showQuickJumper:false,   //是否可以快速跳转至某页
+        }
+      }else{
+        pagination = {
+          current:data.current,
+          pageSize:data.pageSize,
+          total:data.total
+        };
+      }
+
+
+      rows.forEach((item,i)=>{
+        rows[i].key = item.id;
       })
+
+      if(deleteKey){
+
+          let { selectedRows,selectedRowKeys } = this.state;
+
+          selectedRows.forEach((item,i)=>{
+            if(item.id === deleteKey){
+              selectedRows.splice(i,1);
+            }
+          })
+
+          selectedRowKeys.forEach((item,i)=>{
+            if(item === deleteKey){
+              selectedRowKeys.splice(i,1);
+            }
+          })
+
+
+          this.setState({selectedRows,selectedRowKeys});
+
+      }
+
+      //console.log(rows)
+
+
       this.setState({
         loading:false,
         dataSource:this.setDataSourceKey(rows),
-        pagination
+        pagination,
+        //selectedRows:[],
+        //selectedRowKeys:[],
+      },()=>{
+        this.buttons();
       });
     })
     .catch(()=>{
@@ -184,14 +225,16 @@ class AppTable extends Component{
   }
 
 
+  buttons = ()=>{
+
+    let {selectedRowKeys,selectedRows,dataSource} = this.state;
+
+    this.refs.bottons&&this.refs.bottons.visible(selectedRowKeys,selectedRows,dataSource);  //bottons按钮组显示隐藏的方法
+  }
+
  setDataSourceKey = (dataSource)=>{
    dataSource.forEach((item,i)=>{
-     dataSource[i]["key"] = dataSource[i]["id"];
-     for(var attr in item){
-       if(!item[attr]){
-         dataSource[i][attr];
-       }
-     }
+     dataSource[i].key = dataSource[i].id;
    })
    return dataSource;
  }
@@ -218,10 +261,13 @@ class AppTable extends Component{
   // }
 
   onSelectedRowKeysChange = (selectedRowKeys, selectedRows) => {
-    this.setState({ selectedRowKeys });  //设置选中
-    let allData = this.getData();  //获取所有数据
-    this.props.onChange(selectedRowKeys, selectedRows,allData);  //勾选时触发的事件
-    this.refs.bottons&&this.refs.bottons.visible(selectedRowKeys, selectedRows,allData);  //bottons按钮组显示隐藏的方法
+
+    this.setState({ selectedRowKeys,selectedRows },()=>{
+      let allData = this.getData();  //获取所有数据
+      this.props.onChange(selectedRowKeys, selectedRows,allData);  //勾选时触发的事件
+      this.buttons();
+    });  //设置选中
+
   }
 
   onRow = (record) => ({
@@ -288,12 +334,15 @@ class AppTable extends Component{
 
   render(){
     let {loading,selectedRowKeys,dataSource,pagination,columns,toolbar} = this.state;
-    let {scroll,expandedRowRender,style,size,title} = this.props;
-    const rowSelection = {
-      selectedRowKeys,
-      onChange: this.onSelectedRowKeysChange,
-      getCheckboxProps:this.props.disabled
-    };
+    let {scroll,expandedRowRender,style,size,title,rowSelection} = this.props;
+
+        rowSelection = rowSelection === false?null:{
+          selectedRowKeys,
+          onChange: this.onSelectedRowKeysChange,
+          getCheckboxProps:this.props.disabled
+        }
+
+
 
     return (
       <div>
@@ -338,16 +387,18 @@ AppTable.defaultProps = {
   style:{},
   click:()=>{}, //点击列执行的事件
   queryParams:()=>{}, //每次查询都会带上的数据
-  action:{}, //最右边操作列
   url:null, //获取数据的地址
   deleteUrl:"", //数据删除的地址
+  deleteKey:"", //获取删除时提示的key
   columns:[],  //展示的列,父级带入
   dataSource:[],  //展示的内容,动态获取
-  scroll:{x:1500,y:500},  //定位表头滚动高度 {x:1000,y:1000}
+  scroll:{x:2000,y:500},  //定位表头滚动高度 {x:1000,y:1000}
   size:"middle",   //表格大小,default middle small
   loading:true,  //初始化是加载状态
   bordered:false,  //边框
   selectedRowKeys: [], //默认勾选的
+  selectedRows:[],
+  rowSelection:{}, //列对象
   onChange:()=>{}, //勾选改变时触发的的函数
   pagination: { //分页设置
     showSizeChanger:true,   //是否可以改变 pageSize

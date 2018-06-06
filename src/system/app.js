@@ -33,16 +33,20 @@ class App extends Component{
   showLogin =()=>{
     window.uc.storage.remove('isLogin');
     this.setState({
-      page:<Login showIndex={this.showIndex} />
+      page:this.login
     })
   }
 
   showIndex =(data)=>{
+
     window.uc.storage.set('isLogin',true);
     window.uc.storage.set('userInfo',data);
+    window.uc.storage.set('dic',data.dic);
+
     this.setState({
-      page:<Index showLogin={this.showLogin} />
-    })
+      page:this.index
+    });
+
   }
 
 

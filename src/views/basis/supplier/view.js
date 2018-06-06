@@ -24,7 +24,8 @@ class View extends Component{
       },
       {
         name: "bankId",
-        label: "开户行"
+        label: "开户行",
+        dic:"bank_code"
       },
       {
         name: "bankaccount",

@@ -4,46 +4,11 @@ import Search from '@c/search';
 
 import FormModal from '@c/form/formModal';
 
-import { Divider} from 'antd';
 
 
 class List extends Component{
 
 
-  info = {
-    data:[
-      {
-        type: "input",
-        name: "id",
-        label: "id",
-        readonly:true,
-        visible:false
-      },
-      {
-        type: "input",
-        name: "taxrate",
-        label: "税率值(%)",
-        rules: [{ required: true}]
-      },
-      {
-        type: "datePicker",
-        name: "effectDate",
-        label: "生效时间",
-        rules: [{ required: true}]
-      },
-      {
-        type: "datePicker",
-        name: "invalidDate",
-        label: "失效时间",
-        rules: [{ required: true}]
-      },
-      {
-        type: "textarea",
-        name: "remarks",
-        label: "备注信息"
-      }
-    ]
-  }
 
   constructor(){
     super(...arguments);
@@ -57,49 +22,103 @@ class List extends Component{
         }
       ],
       columns : [
-        { title: "序号",dataIndex: "taxType"},
         { title: "税率值(%)", dataIndex: "taxrate"},
-        { title: "生效标志", dataIndex: "effectFlag"},
+        { title: "生效标志", dataIndex: "effectFlag",dic:"effect_flag"},
         { title: "生效时间", dataIndex: "effectDate"},
         { title: "失效时间", dataIndex: "invalidDate"}
       ],
-      action:{
-        edit:this.edit,
-        view:this.view,
-        delete:false
-      },
       toolbar : {
-        add:{
+        inputTaxAdd:{
           visible: () => true,
           click:this.add
         },
+        inputTaxEdit:{
+          visible: (selectedRowKeys) => selectedRowKeys.length === 1,
+          click:this.edit
+        },
+        inputTaxView:{
+          visible: (selectedRowKeys) => selectedRowKeys.length === 1,
+          click:this.view
+        },
         delete:false
-      }
+      },
+      data:[
+        {
+          type: "input",
+          name: "id",
+          label: "id",
+          readonly:true,
+          visible:false
+        },
+        {
+          type: "input",
+          name: "taxrate",
+          label: "税率值(%)",
+          rules: [{ required: true}]
+        },
+        {
+          type: "datePicker",
+          name: "effectDate",
+          label: "生效时间",
+          rules: [{ required: true}]
+        },
+        {
+          type: "datePicker",
+          name: "invalidDate",
+          label: "失效时间",
+          rules: [{ required: true}]
+        },
+        {
+          type: "textarea",
+          name: "remarks",
+          label: "备注信息"
+        }
+      ]
     }
 
   }
 
-  view = (data)=>{
+  view = (selectedRowKeys,selectedRows, allData)=>{
+    let row = selectedRows[0];
     let {form} = this.refs;
+    let { data } = this.state;
+    data.forEach((item,i)=>{
+      data[i].readonly = true;
+    })
+    this.setState({data})
     form.setData({
       title:"查看销项税率"
-    },data,true);
+    },row,true);
   }
 
-  edit = (data) =>{
+
+  edit = (selectedRowKeys,selectedRows, allData) =>{
+    let row = selectedRows[0];
     let {form} = this.refs;
+    let { data } = this.state;
+    data.forEach((item,i)=>{
+      data[i].readonly = false;
+    })
+    data[1].readonly = true;
+    this.setState({data:data});
     form.setData({
       title:"编辑进项税率"
-    },data);
+    },row);
   }
 
 
   add = ()=>{
     let {form} = this.refs;
+    let { data } = this.state;
+    data.forEach((item,i)=>{
+      data[i].readonly = false;
+    })
+    this.setState({data:data})
     form.show({
       title:"新增进项税率"
     });
   }
+
 
 
   refresh = ()=>{
@@ -107,8 +126,7 @@ class List extends Component{
   }
 
   render(){
-    let {search,columns,action,toolbar} = this.state;
-    let {data} = this.info;
+    let {search,columns,action,toolbar,data} = this.state;
     return(
       <div className="content">
         <Search data={search} ref="search" click={()=>this.refs.table.refresh()} />

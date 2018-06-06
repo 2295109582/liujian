@@ -4,45 +4,43 @@ import Search from '@c/search';
 
 import FormModal from '@c/form/formModal';
 
-import { Divider} from 'antd';
 
 
 class List extends Component{
 
 
-  info = {
-    data:[
-      {
-        type: "input",
-        name: "id",
-        label: "id",
-        readonly:true,
-        visible:false
-      },
-      {
-        type: "input",
-        name: "tradeCode",
-        label: "行业类别编码",
-        rules: [{ required: true}]
-      },
-      {
-        type: "input",
-        name: "tradeName",
-        label: "行业类别名称",
-        rules: [{ required: true}]
-      },
-      {
-        type: "textarea",
-        name: "remarks",
-        label: "备注信息"
-      }
-    ]
-  }
+
 
   constructor(){
     super(...arguments);
 
     this.state = {
+      data:[
+        {
+          type: "input",
+          name: "id",
+          label: "id",
+          readonly:true,
+          visible:false
+        },
+        {
+          type: "input",
+          name: "tradeCode",
+          label: "行业类别编码",
+          rules: [{ required: true}]
+        },
+        {
+          type: "input",
+          name: "tradeName",
+          label: "行业类别名称",
+          rules: [{ required: true}]
+        },
+        {
+          type: "textarea",
+          name: "remarks",
+          label: "备注信息"
+        }
+      ],
       search: [
         {
           type: "input",
@@ -56,45 +54,71 @@ class List extends Component{
         }
       ],
       columns : [
-        {title: "行业类别编码",dataIndex: "tradeCode"},
+        { title: "行业类别编码",dataIndex: "tradeCode"},
         { title: "行业类别名称", dataIndex: "tradeName"},
         { title: "备注", dataIndex: "remarks"}
       ],
-      action:{
-        edit:this.edit,
-        view:this.view
-      },
       toolbar : {
         add:{
           visible: () => true,
           click:this.add
+        },
+        edit:{
+          visible: (selectedRowKeys) => selectedRowKeys.length === 1,
+          click:this.edit
+        },
+        view:{
+          visible: (selectedRowKeys) => selectedRowKeys.length === 1,
+          click:this.view
         }
       }
     }
 
   }
 
-  view = (data)=>{
+  swiper = ()=>{
+    this.refresh();
+  }
+
+  view = (selectedRowKeys,selectedRows, allData)=>{
+    let row = selectedRows[0];
     let {form} = this.refs;
+    let { data } = this.state;
+    data.forEach((item,i)=>{
+      data[i].readonly = true;
+    })
+    this.setState({data})
     form.setData({
       title:"查看行业类别"
-    },data,true);
+    },row,true);
   }
 
-  edit = (data) =>{
+  edit = (selectedRowKeys,selectedRows, allData) =>{
+    let row = selectedRows[0];
     let {form} = this.refs;
+    let { data } = this.state;
+    data.forEach((item,i)=>{
+      data[i].readonly = false;
+    })
+    this.setState({data:data});
     form.setData({
       title:"编辑行业类别"
-    },data);
+    },row);
   }
-
 
   add = ()=>{
     let {form} = this.refs;
+    let { data } = this.state;
+    data.forEach((item,i)=>{
+      data[i].readonly = false;
+    })
+    this.setState({data:data})
     form.show({
       title:"新增行业类别"
     });
   }
+
+
 
 
   refresh = ()=>{
@@ -102,8 +126,8 @@ class List extends Component{
   }
 
   render(){
-    let {search,columns,action,toolbar} = this.state;
-    let {data} = this.info;
+    let {search,columns,toolbar,data} = this.state;
+
     return(
       <div className="content">
         <Search data={search} ref="search" click={()=>this.refs.table.refresh()} />
@@ -113,7 +137,6 @@ class List extends Component{
           deleteKey="tradeCode"
           scroll={false}
           columns={columns}
-          action={action}
           queryParams={()=>this.refs.search.getData()}
           toolbar={toolbar}
           ref="table"

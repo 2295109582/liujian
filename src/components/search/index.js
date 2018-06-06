@@ -2,8 +2,7 @@ import React,{Component} from 'react';
 import {Form,Input,DatePicker,Select,Icon,Row,Col,Button} from 'antd';
 import Query from '@c/query';
 const FormItem = Form.Item;
-const Search = Input.Search;
-
+const { MonthPicker } = DatePicker;
 //form表单布局
 class NormalForm extends Component {
 
@@ -25,6 +24,25 @@ class NormalForm extends Component {
   }
 
 
+  deleteNull = (data)=>{
+    let result = {...data};
+    for(var attr in result){
+      if(result[attr] === null){
+        delete result[attr];
+      }
+      if(result[attr] !== undefined && result[attr].constructor === Array){
+        delete result[attr];
+      }
+    }
+    return result;
+  }
+
+  setFieldsValue = (values)=>{ //设置值
+    let { form } = this.props;
+    let result = this.deleteNull(values);
+    form.setFieldsValue(result);
+  }
+
   handleSubmit = (e) => {
     let {handleSubmit} = this.props;
     handleSubmit(e);
@@ -35,34 +53,57 @@ class NormalForm extends Component {
   createData = (newData,visible)=>{
     let { getFieldDecorator } = this.props.form; //表单验证方法
     let { dis } = this.state;
-    let { formItemLayout, grid } = this.props; //获取传进来的数据
+    let { formItemLayout, grid,visibleLen } = this.props; //获取传进来的数据
 
     let list = newData.map((item,index)=>{  //根据传进来的数据进行遍历渲染不同的组件
       let formItemCom;  //组件变量
       switch (item.type) {
         case "input":  //输入框 默认项
-          formItemCom =  (<Input placeholder='请输入' prefix={item.icon&&<Icon type={item.icon} style={{ color: 'rgba(0,0,0,.25)' }} />} size={item.size} />) ;
+          formItemCom =  (<Input placeholder='请输入'  prefix={item.icon&&<Icon type={item.icon} style={{ color: 'rgba(0,0,0,.25)' }} />} size={item.size} />) ;
           break;
-        case "date":   //日期
-          formItemCom =  (<DatePicker format={item.moment} style={{width:'100%'}} />) ;
+        case "datePicker":   //日期
+          formItemCom =  (<DatePicker  style={{width:'100%'}} placeholder={item.placeholder} />) ;
+          break;
+        case "monthPicker":  //日期  选择月
+          formItemCom =  (<MonthPicker  style={{width:'100%'}} placeholder={item.placeholder} />) ;
           break;
         case "select":   //选择框
-          let options = item.options.map((optionsItem,optionsi)=>{
+          let selectData = item.options || window.uc.dic(item.dic);
+          let options = selectData.map((optionsItem,optionsi)=>{
               return <Select.Option key={optionsi}  value={optionsItem.value}>{optionsItem.label}</Select.Option>
           })
-          formItemCom =  (<Select placeholder="请选择" style={{width:'100%'}}>{options}</Select>) ;
+          formItemCom =  (<Select placeholder="请选择" onChange={item.change} style={{width:'100%'}}>{options}</Select>) ;
           break;
         default:
-          formItemCom =  (<Search placeholder="请选择或输入" enterButton onSearch={(value) => {this.refs.query.show(item.label,item.type,item.name)}}  style={{ width: '100%' }}  />) ;
+          formItemCom = "queryComponent";  //不是就定义成查询组件；
       }
 
       let rules = [];
-      if(item.type !== "date"){
-        rules.push({ pattern:/^[A-Za-z0-9\u4e00-\u9fa5]+$/,message:"请不要骚操作！"});
+
+        //rules.push({pattern:/^[a-zA-Z0-9-+*/=@""''^&,()$#%!\\.“”￥（）、，！。_\u4e00-\u9fa5]+$/,message:"不能含有特殊字符！"});
+
+      if(formItemCom === "queryComponent"){
+        return (
+          <Col {...grid} key={index}  style={{display:(visible || index>visibleLen?dis:null),minHeight:64}}>
+            <Query
+              getFieldDecorator={getFieldDecorator}
+              setFieldsValue={this.setFieldsValue}
+              formItemLayout={formItemLayout}
+              readonly={item.readonly}
+              type={item.type} //组件类型
+              label={item.label}  //提示名
+              labelName={item.labelName}  //显示的名字name
+              labelValue={item.labelValue}   //显示的名字值
+              name={item.name}
+              rules={rules}
+             />
+          </Col>
+        )
       }
 
+
       return (               //返回每一项表单,设置验证规则,都是父级传进来
-        <Col key={index} {...grid} style={{display:(visible || index>1?dis:null),minHeight:64}}>
+        <Col key={index} {...grid} style={{display:(visible || index>visibleLen?dis:null),minHeight:64}}>
           <FormItem {...formItemLayout} label={item.label}>
             {getFieldDecorator(item.name,{rules})(formItemCom)}
           </FormItem>
@@ -102,9 +143,7 @@ class NormalForm extends Component {
   render() {
     //如果不在这个方法里面写渲染列表,则更改数据较为麻烦,输入框内容不会被改变
     let { dis } = this.state;
-    let { data,search,reset, grid,setFieldsValue } = this.props; //获取传进来的数据
-
-
+    let { data,search,reset, grid,visibleLen } = this.props; //获取传进来的数据
 
     return (
       <div>
@@ -116,7 +155,7 @@ class NormalForm extends Component {
               <div style={{paddingTop:5,marginBottom:24}}>
                 <Button onClick={search} type="primary" style={{marginRight:8}}>查询</Button>
                 <Button onClick={reset} style={{marginRight:8}}>重置</Button>
-                {data.length>2?(
+              {data.length>visibleLen&&data.length>=2?(
                   <a style={{ marginRight: 8 }} onClick={this.toggleForm}>
                       {dis==='none'?'展开':'收起'}
                        <Icon type={dis==='none'?'down':'up'} />
@@ -127,7 +166,6 @@ class NormalForm extends Component {
           </Row>
           <Button htmlType="submit" style={{display:'none'}}></Button>
         </Form>
-        <Query ref="query" setFieldsValue={setFieldsValue} />
       </div>
 
     );
@@ -204,9 +242,25 @@ class AppSearch extends Component{
   //主动提交表单
   doSubmit =(fn)=>{
     var {form} = this.refs;
-    form.validateFields((err, values) => {
+
+    form.validateFields((err, fieldsValue) => {
         if (err) {return err}; //如果有错误就阻止提交
-        fn&&fn(values);
+
+        let {data} = this.props;
+
+        data.forEach((item,i)=>{
+          if(item.type === "datePicker" && fieldsValue[item["name"]]){
+            fieldsValue[item["name"]] =  fieldsValue[item["name"]].format('YYYY-MM-DD');
+          }
+
+          if(item.type === "monthPicker" && fieldsValue[item["name"]]){
+            fieldsValue[item["name"]] = fieldsValue[item["name"]].format('YYYY-MM');
+          }
+
+        });
+
+
+        fn&&fn(fieldsValue);
     });
   }
 
@@ -222,11 +276,12 @@ class AppSearch extends Component{
   }
 
   render(){
-    let {data,formItemLayout,grid} = this.props;
+    let {data,formItemLayout,grid,visibleLen} = this.props;
     return(
       <div className="searchWrap" style={{display:(this.getDataLen() === 0?'none':'block')}}>
         <WrappedNormalForm
           data={data}
+          visibleLen={visibleLen}
           handleSubmit={this.handleSubmit}
           search={this.search}
           reset={this.reset}
@@ -245,6 +300,7 @@ AppSearch.defaultProps = {
   reset:()=>{},  //点击重置执行的事件
   click:()=>{}, //点击搜索和重置都执行的事件
   initvisible:2, //初始可见两项
+  visibleLen:1, //可见的默认项
   visible:false, //初始展开两项
   url:"",  //获取数据的地址
   data:[],  //自己定义的参数

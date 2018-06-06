@@ -39,13 +39,7 @@ export default class AppForm extends Component{
       },
       {
         type:"select",
-        options:[
-          {value:"1",label:"中国银行"},
-          {value:"2",label:"建设银行"},
-          {value:"3",label:"工商银行"},
-          {value:"4",label:"交通银行"},
-          {value:"5",label:"农业银行"},
-        ],
+        dic:"bank_code",
         name: "bankId",
         label: "开户行",
         rules: [{ required: true}]
@@ -58,10 +52,7 @@ export default class AppForm extends Component{
       },
       {
         type:"select",
-        options:[
-          {value:"1",label:"劳务"},
-          {value:"2",label:"材料"}
-        ],
+        dic:"subunit_sort",
         name: "subunitType",
         label: "分包类别",
         rules: [{ required: true}]
@@ -99,7 +90,7 @@ export default class AppForm extends Component{
   teams = {
     teamColumns : [
       { title: "班组名称",dataIndex: "teamName"},
-      { title: "班组类别", dataIndex: "teamSort"},
+      { title: "班组类别", dataIndex: "teamSort",dic:"team_sort"},
       { title: "班组负责人", dataIndex: "teamleader"},
       { title: "联系电话", dataIndex: "teamTel"}
     ],
@@ -131,11 +122,7 @@ export default class AppForm extends Component{
       },
       {
         type:"select",
-        options:[
-          {value:"1",label:"水泥"},
-          {value:"2",label:"模板"},
-          {value:"3",label:"钢筋"}
-        ],
+        dic:"team_sort",
         name: "teamSort",
         label: "班组类别",
         rules: [{ required: true}]
@@ -183,7 +170,11 @@ export default class AppForm extends Component{
           data={infoData}
           hideData={infoHideData}
           tableList={tableList}
-        
+          submitCallback={()=>{
+             if(this.props.params){
+               this.props.remove();
+             };
+           }}
           ref="form"
         />
 

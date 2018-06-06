@@ -1,8 +1,8 @@
 import React,{Component} from 'react';
-import { Layout,Badge,Icon,Avatar, Radio,Row,Col ,Switch,notification,Menu, Dropdown,Select } from 'antd';
+import { Layout,Icon,Row,Col ,Switch,notification,Menu, Dropdown,Modal,message,Input } from 'antd';
 import screenfull from 'screenfull';
 const { Header } = Layout;
-
+const confirm = Modal.confirm;
 class AppSetting extends Component{
   render(){
     return(
@@ -31,7 +31,14 @@ export default class AppHeader extends Component{
 
   constructor(props, context){
     super(props);
+
+    this.password = "";
+    this.newpassword1 = "";
+    this.newpassword2 = "";
+
     this.state = {
+      visible:false,
+      loading:false,
       menuicon:"menu-fold", //菜单展开图标的type
       screenfullIcon:"arrows-alt"
     }
@@ -64,22 +71,84 @@ export default class AppHeader extends Component{
     });
   }
 
+  click = ({ item, key, keyPath })=>{
+    if(key === "1"){
+      this.setState({visible:true})
+    }else if(key === "2"){
+      confirm({
+        title: '是否确认重置默认密码?',
+        onOk() {
+          return new Promise((resolve, reject) => {
+            window.uc.axios.post("/login/resetPassword",{
+              id:window.uc.storage.get('userInfo').id,
+              password:""
+            }).then((data)=>{
+              if(data.status === 200){
+                message.info(data.msg);
+              }
+              resolve();
+            })
+          });
+        }
+      });
+    }
+  }
 
+  change = (e)=>{
+    let target = e.target;
+    this[target.name] = target.value;
+  }
+
+  handleOk = ()=>{
+
+    let {password, newpassword1,newpassword2 } = this;
+
+    if( password === ""){
+      message.error("当前密码不能为空！");
+      return;
+    }
+
+    if( newpassword1 === "" || newpassword2 === ""){
+      message.error("请输入新密码！");
+      return;
+    }
+
+    if( newpassword1 !== newpassword2 ){
+      message.error("两次新密码不一致！");
+      return;
+    }
+
+    this.setState({loading:true})
+    window.uc.axios.post("/login/resetPassword",{
+      id:window.uc.storage.get('userInfo').id,
+      validatePwd:password,
+      password:newpassword1
+    }).then((data)=>{
+      if(data.status === 200){
+        message.info(data.msg);
+      }
+      this.setState({loading:false,visible:false})
+    })
+
+
+
+
+  }
 
   render(){
     var userInfo = window.uc.storage.get('userInfo');
-    let {userName,avatar} = userInfo;
-
+    let {userName} = userInfo;
+//avatar
     let menu = (
-      <Menu style={{width:160}}>
+      <Menu style={{width:160}} onClick={this.click}>
         <Menu.Item key="0" disabled>
           <Icon type="setting" style={{marginRight:10}} />个人中心
         </Menu.Item>
-        <Menu.Item key="1" disabled>
-          <Icon type="setting" style={{marginRight:10}}  />个人设置
+        <Menu.Item key="1">
+          <Icon type="form" style={{marginRight:10}}  />修改密码
         </Menu.Item>
-        <Menu.Item key="2" disabled>
-          <Icon type="setting" style={{marginRight:10}}  />触发报错
+        <Menu.Item key="2">
+          <Icon type="tool" style={{marginRight:10}}  />重置密码
         </Menu.Item>
         <Menu.Divider />
         <Menu.Item key="3" >
@@ -90,9 +159,23 @@ export default class AppHeader extends Component{
       </Menu>
     );
 
+    let { visible ,loading} = this.state;
 
     return(
       <Header style={{ background: '#fff', padding: 0 }}>
+        <Modal
+          title="修改密码"
+          visible={visible}
+          onOk={this.handleOk}
+          destroyOnClose={true}
+          maskClosable={false}
+          confirmLoading={loading}
+          onCancel={()=>{this.setState({visible:false})}}
+          >
+            <Input placeholder="请输入当前密码" type="password" name="password" onChange={this.change} style={{marginBottom:"24px"}} />
+          <Input placeholder="请输入新密码" type="password" name="newpassword1" onChange={this.change} style={{marginBottom:"24px"}}  />
+            <Input placeholder="请输入新密码" type="password" name="newpassword2" onChange={this.change} />
+        </Modal>
         <div id="headerWrap" className="clearfix">
           <div className="headerMenu">
             <a onClick={this.toggleIcon}>
@@ -100,7 +183,7 @@ export default class AppHeader extends Component{
                 <Icon type={this.state.menuicon} style={{"fontSize":"20px",transform:'translateY(2px)'}} />
               </span>
             </a>
-            <a>
+            {/* <a>
               <Badge count={5} style={{backgroundColor: '#52c41a',opacity:'0.6'}}>
                 <span className="head-example">
                   <Icon type="aliwangwang-o" style={{"fontSize":"20px"}} />
@@ -113,7 +196,7 @@ export default class AppHeader extends Component{
                   <Icon type="github" style={{"fontSize":"20px"}} />
                 </span>
               </Badge>
-            </a>
+            </a> */}
           </div>
           <div className="headerFn clearfix">
             <div className="headerTab" onClick={this.toggleSetting}>
@@ -125,8 +208,7 @@ export default class AppHeader extends Component{
             <div className="headerTab">
               <Dropdown overlay={menu}>
                 <div>
-                  <Avatar src={"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1524914380552&di=caddc081bb46de209510d192458f16e8&imgtype=0&src=http%3A%2F%2Fwww.qqzhi.com%2Fuploadpic%2F2014-12-03%2F114912498.jpg"} style={{position:'relative',top:'10px'}} />
-                  <a style={{marginLeft:'10px'}}>{"周星驰"}</a>
+                  <a>{userName}</a>
                 </div>
               </Dropdown>
             </div>

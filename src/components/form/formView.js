@@ -29,13 +29,38 @@ class FormView extends Component{
   dataTolist = (result)=>{
     let {data} = this.props; //根据data渲染数据
     let dataList = [];
-    for(var i=0;i<data.length;i++){
-      dataList.push({
-        label:data[i]["label"],
-        value:(result[data[i]["name"]] || "--")
-      })
-    }
+
+
+    data.forEach((item,i)=>{
+
+      if(item.dic){
+        let dic = item.options || window.uc.dic(item.dic);
+
+        dic.forEach((ds,j)=>{
+
+
+          let val = result[item["name"]]&&result[item["name"]].toString&&result[item["name"]].toString();
+
+          if(ds.value === val){
+            dataList.push({
+              label:item["label"],
+              value:ds.label
+            })
+          }
+        })
+      }else{
+        dataList.push({
+          label:item["label"],
+          value:result[item["name"]]
+        })
+      }
+
+
+    })
+
     return dataList;
+
+
   }
 
   setTableData = (data)=>{  //表格数据回填

@@ -13,13 +13,16 @@ export default {
     "createTime": null,  //创建时间
     "updateTime": null,  //更新时间
     "status": 0,  //
-    "token": null  //用户token
+    "token": null,  //用户token
+    "isAdmin":true,  //是否管理员
+    "permission":[] //权限
   },  //用户信息
+  dic:{}, //数据字典
   pageWrapScrollTop:0, //页面滚动的距离
   breadcrumb:["首页"], //面包屑导航
   openKeys:[], //展开的菜单
   selectedKeys:["1"], //被选中的key
   formSubmitPrompt:true, //表单提交前的提示
-  formClearData:false,  //表单添加后清空数据
-  formVisible:false,  //表单更多信息隐藏
+  formClearData:true,  //表单添加后清空数据
+  formVisible:true,  //表单更多信息隐藏
 }

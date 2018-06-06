@@ -9,9 +9,27 @@ class Index extends Component{
 
   componentDidMount(){
     let {tabs} = this.refs;
-    tabs.add('工程信息列表',{
-      view:List
-    },false)
+
+    window.uc.axios.post("/project/preTax")
+    .then((data)=>{
+      let last = data.data;
+
+      if(last){
+        last = last.map((item,i)=>{
+          return {value:`${item.id}`,label:`${item.pretaxRate}`};
+        })
+      }
+
+      tabs.add('工程基本信息',{
+        view:List,
+        props:{
+          preTax:last
+        }
+      },false)
+    })
+
+
+
   }
 
   render(){

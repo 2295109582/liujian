@@ -4,20 +4,31 @@
   width: 100%;
   overflow: auto;
   position: absolute;
-  background:#f0f2f5 url("./loginBj.svg") center 110px;
+  background:#f0f2f5 url("./loginBj.svg");
+  background-size: 100% 100%;
   background-repeat: no-repeat;
 }
 
+.loginBox{
+  background-color: rgba(255,255,255,1);
+  width:500px;
+  margin: 0 auto;
+  height: 100%;
+}
+
 .loginTitle{
-  margin-left: -40px;
-  padding: 112px 0 0 0;
+  padding-top: 50px;
   text-align: center;
-  font-size: 33px;
+  font-size: 24px;
+  margin-bottom: 30px;
   color: rgba(0, 0, 0, 0.85);
   font-family: 'Myriad Pro', 'Helvetica Neue', Arial, Helvetica, sans-serif;
 }
 .loginTitle img{
   height: 50px;
+  display:block;
+  text-align: center;
+  margin: 30px auto;
 }
 .loginTitle p{
   font-size: 14px;

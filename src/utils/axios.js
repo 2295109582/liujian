@@ -7,15 +7,18 @@ axios.interceptors.request.use(function (config) {
   let condition = {...config.data};
   let formData = new FormData();
   for(var attr in condition){
-    if(condition[attr]!==undefined){
+    if(condition[attr]===undefined){
+      formData.append(attr,"");
+    }else{
       formData.append(attr,condition[attr]);
     }
+
   }
 
   let token = window.uc.storage.get("userInfo")["token"];
   config.headers['Content-type'] = 'application/x-www-form-urlencoded';
-  //config.url = `/liujian${config.url}?token=${token}`;
-  config.url = `${config.url}?token=${token}`;
+  config.url = `/liujian${config.url}?token=${token}`;
+  //config.url = `${config.url}?token=${token}`;
   config.data = formData;
   return config;
 }, function (error) {
@@ -28,11 +31,10 @@ axios.interceptors.request.use(function (config) {
 axios.interceptors.response.use(function (response) {
     // 对响应数据做点什么
     if(response.status === 200){
-      if(response.data.status === 200){
-        return response.data;
-      }else{
+      if(response.data.status && response.data.status !== 200){
         message.error(response.data.msg);
       }
+      return response.data;
     };
     //message.error("响应数据出错！");
   },

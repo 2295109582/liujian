@@ -7,12 +7,19 @@ const TabPane = Tabs.TabPane;
 
 
 class HighOrder extends Component{
+
+
+  swiper=()=>{
+    let { swiper } = this.tab;
+    swiper&&swiper();
+  }
+
   render(){
     let {view,add,remove} = this.props;
     let Com = view;
     return(
       <div>
-        <Com {...this.props.props} add={add} remove={remove}  />
+        <Com {...this.props.props} add={add} remove={remove} ref={el=>this.tab=el} />
       </div>
     )
   }
@@ -23,6 +30,8 @@ class AppTabs extends Component {
     super(props);
     this.newTabIndex = 0;
 
+    this.list = [];
+
     this.state = {
       panes:[]
     };
@@ -30,16 +39,32 @@ class AppTabs extends Component {
 
 
   onChange = (activeKey) => {
+    this.swiper(activeKey);
     this.setState({ activeKey });
   }
   onEdit = (targetKey, action) => {
     this[action](targetKey);
   }
+
+
+  swiper = (activeKey)=>{
+    let { list } = this;
+    for(var attr in list){
+      if(attr === activeKey){
+        list[activeKey].swiper();
+      }
+    }
+  }
+
+  saveHighOrder = (el,activeKey)=>{
+    this.list[activeKey] = el;
+  }
+
   add = (title,content,closable) => {
     const panes = this.state.panes;
     const activeKey = `${++this.newTabIndex}`;
 
-    panes.push({ title: title, content: <HighOrder add={this.add} remove={()=>{this.remove(activeKey)}} {...content} /> , key: activeKey,closable });
+    panes.push({ title: title, content: <HighOrder add={this.add} ref={el=>this.saveHighOrder(el,activeKey)} remove={()=>{this.remove(activeKey)}} {...content} /> , key: activeKey,closable });
     this.setState({ panes, activeKey });
     return activeKey;
   }
@@ -56,7 +81,10 @@ class AppTabs extends Component {
     if (lastIndex >= 0 && activeKey === targetKey) {
       activeKey = panes[lastIndex].key;
     }
-    this.setState({ panes, activeKey });
+
+    this.setState({ panes, activeKey },()=>{
+        this.swiper(activeKey);
+    });
   }
 
 

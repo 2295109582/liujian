@@ -6,7 +6,6 @@ import Form from './form';
 import View from './view';
 
 
-import { Divider} from 'antd';
 
 
 class List extends Component{
@@ -38,41 +37,52 @@ class List extends Component{
         { title: "纳税人地址", dataIndex: "taxaddress"},
         { title: "纳税人识别号", dataIndex: "taxno"},
         { title: "电话", dataIndex: "tel" },
-        { title: "开户行", dataIndex: "bankId" },
+        { title: "开户行", dataIndex: "bankId",dic:"bank_code", },
         { title: "银行账号", dataIndex: "bankaccount" }
       ],
-      action:{
-        edit:this.edit,
-        view:this.view
-      },
       toolbar : {
         add:{
           visible: () => true,
           click:this.add
+        },
+        edit:{
+          visible: (selectedRowKeys) => selectedRowKeys.length === 1,
+          click:this.edit
+        },
+        view:{
+          visible: (selectedRowKeys) => selectedRowKeys.length === 1,
+          click:this.view
         }
       }
     }
 
   }
 
-  view = (data)=>{
-    this.props.add(`查看${data.supplierNo}`,{
+
+
+  swiper = ()=>{
+    this.refresh();
+  }
+
+  view =(selectedRowKeys,selectedRows, allData)=>{
+    let row = selectedRows[0];
+    this.props.add(`查看${row.supplierNo}`,{
       view:View,
       props:{
-        params:{id:data.id},
+        params:{id:row.id},
         paramsUrl:"/supplier/detail"
       }
     });
   }
 
-  edit = (data) =>{
-    this.props.add(`编辑${data.supplierNo}`,{
+  edit =(selectedRowKeys,selectedRows, allData)=>{
+    let row = selectedRows[0];
+    this.props.add(`编辑${row.supplierNo}`,{
       view:Form,
       props:{
-        params:{id:data.id},
+        params:{id:row.id},
         paramsUrl:"/supplier/detail",
-        submitUrl:"/supplier/update",
-        refresh:this.refresh
+        submitUrl:"/supplier/update"
       }
     });
   }
@@ -81,8 +91,7 @@ class List extends Component{
     this.props.add('新增供应商',{
       view:Form,
       props:{
-        submitUrl:"/supplier/add",
-        refresh:this.refresh
+        submitUrl:"/supplier/add"
       }
     });
   }
@@ -92,7 +101,7 @@ class List extends Component{
   }
 
   render(){
-    let {search,columns,toolbar,action} = this.state;
+    let {search,columns,toolbar} = this.state;
 
     return(
       <div className="content">
@@ -102,7 +111,6 @@ class List extends Component{
           deleteUrl="/supplier/delete"
           deleteKey="supplierNo"
           columns={columns}
-          action={action}
           queryParams={()=>this.refs.search.getData()}
           toolbar={toolbar}
           ref="table"

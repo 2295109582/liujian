@@ -11,14 +11,15 @@ class FormModal extends Component{
   constructor(){
     super(...arguments);
 
-    let {data, visible,submitUrl,title, confirmLoading,formItemLayout,tailFormItemLayout } = this.props;
+    let { visible,submitUrl,title, confirmLoading,formItemLayout,tailFormItemLayout,data } = this.props;
 
+    this.rawData = data;
 
     this.state = {
-      data,
       visible,
       title,
       submitUrl,
+      params:{},
       confirmLoading,
       formItemLayout,
       tailFormItemLayout,
@@ -31,7 +32,8 @@ class FormModal extends Component{
   show = (info={},fn)=>{
     this.setState({
       visible: true,
-      title:info.title
+      title:info.title,
+      params:info.params
      },()=>{
       fn&&fn();
     });
@@ -63,11 +65,15 @@ class FormModal extends Component{
         submitUrl = this.props.updateUrl;
       }
       this.setState({ confirmLoading: true }); //设置提交状态
-      window.uc.axios.post(submitUrl, values)
+      let {params} = this.state;
+      window.uc.axios.post(submitUrl, {...values,...params})
         .then((data) => {
-          message.info(data.msg);
-          this.setState({ visible: false, confirmLoading: false });
-          this.props.submitCallback();
+          if(data.status === 200){
+            message.info(data.msg);
+            this.setState({ visible: false, confirmLoading: false });
+            this.props.submitCallback();
+          };
+          this.setState({ confirmLoading: false });
         })
         .catch((error)=> {
           this.setState({ confirmLoading: false });
@@ -75,40 +81,21 @@ class FormModal extends Component{
     });
   }
 
-
-  deleteNull = (data)=>{
-    let result = {...data};
-    for(var attr in result){
-      if(result[attr] === null){
-        delete result[attr];
-      }
-      if(typeof result[attr] === "object"){
-        delete result[attr];
-      }
-      if(typeof result[attr] === "number"){
-        result[attr] = result[attr].toString();
-      }
-    }
-    return result;
+  setFieldsValue = (values)=>{
+    let {form} = this.refs;
+    form&&form.setFieldsValue(values);
   }
-
 
   setData = (info={},values,view) => {
     this.show(info,()=>{
       setTimeout(()=>{
         let {form} = this.refs;
-        let list = this.deleteNull(values);
         if(view === true){
-          let data = [...this.state.data];
-          data.forEach((item,i)=>{
-            data[i].readonly = true;
-          })
-          this.setState({data,view})
+          this.setState({view})
         }else{
           this.setState({view:false})
         }
-
-        form&&form.setFieldsValue(list);
+        form&&form.setFieldsValue(values);
       },100)
 
     });
@@ -132,15 +119,8 @@ class FormModal extends Component{
 
   render(){
     let { visible, confirmLoading,formItemLayout,tailFormItemLayout,title} = this.state;
-    let {data,width} = this.state;
-
-    data.push({
-      type: "input",
-      name: "key",
-      label: "key",
-      readonly:true,
-      visible:false
-    })
+    let { width } = this.state;
+    let { data } = this.props;
 
     return(
       <div>

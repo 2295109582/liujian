@@ -1,58 +1,116 @@
 import React,{Component} from 'react';
-import {AsyncComponent as asy} from './asyncComponent';
-import {Route,Switch} from 'react-router-dom';
+//import {AsyncComponent as asy} from './asyncComponent';
+import {Route,Switch,Redirect} from 'react-router-dom';
+
+import Index from '@/views/home'; //首页
+import OwnerUnit from '@/views/basis/ownerUnit';  //业主单位列表
+import Subcontracting from '@/views/basis/subcontracting'; //专业分包
+import Supplier from '@/views/basis/supplier'; //供应商
+import ProjectInfo from '@/views/basis/projectInfo'; //工程基本信息
+import TaxRate from '@/views/basis/taxRate'; //税率设置
+import Industry from '@/views/basis/industry';//常用行业类别
+
+
+import Receipt from '@/views/engineering/receipt';// 工程收款
+import JointVenture from '@/views/engineering/jointVenture';// 联营项目
+import SelfSupport from '@/views/engineering/selfSupport';// 自营项目
+import PaymentRecord from '@/views/engineering/paymentRecord';// 已确认付款记录列表
+import Invoicing from '@/views/engineering/invoicing';//  工程开票
+import Items from '@/views/engineering/items';// 工程进项
+import Prepayment from '@/views/engineering/prepayment';// 预缴
+import ProjectInvoicing from '@/views/engineering/projectInvoicing'; // 工程收款与开票情况
+import ProjectInput from '@/views/engineering/projectInput'; // 工程付款与进项累计情况
+
+
+import Ledger from '@/views/auxiliaryQuery/ledger'; // 当月税收台账
+import Tax from '@/views/auxiliaryQuery/tax'; // 税收台账
+import Payment from '@/views/auxiliaryQuery/payment';// 付款记录列表
+
+
+import User from '@/views/settings/user';// 用户
+import Role from '@/views/settings/role'; // 角色
+import Department from '@/views/settings/department'; // 部门
+import Position from '@/views/settings/position';  // 职位
+import Dic from '@/views/settings/dic';  // 数据字典
+
+
+import My404 from '@/views/404';  // 404
 
 class ViewsRouter extends Component{
   render(){
+
+    let { pathname } = window.uc.customHistory().location; //拿到地址
+    let permission = window.uc.pre();
+    if(!permission.includes(pathname)){
+
+      if(pathname !== "/404"){
+        return <Redirect  to="/404" />
+      }
+    };
+
+
+
     return(
       <Switch>
-        <Route path="/" exact render={(props)=> //首页
-          asy(import(/* webpackChunkName: "views/home/index" */'@/views/home'),props)}
-        />
+        <Route path="/" exact component={Index} />
         {/*基础信息*/}
-        <Route path="/basis/ownerUnit" exact render={(props)=> //业主单位列表
-          asy(import(/* webpackChunkName: "views/basis/ownerUnit" */'@/views/basis/ownerUnit'),props)}
-        />
+        <Route path="/basis/ownerUnit" component={OwnerUnit} />
 
-        <Route path="/basis/subcontracting" render={(props)=> //专业分包
-          asy(import(/* webpackChunkName: "views/basis/subcontracting" */'@/views/basis/subcontracting'),props)}
-        />
+        <Route path="/basis/subcontracting" component={Subcontracting}  />
 
-        <Route path="/basis/supplier" render={(props)=> //供应商
-          asy(import(/* webpackChunkName: "views/basis/supplier" */'@/views/basis/supplier'),props)}
-        />
+        <Route path="/basis/supplier" component={Supplier}  />
 
-        <Route path="/basis/projectInfo" render={(props)=> // 工程基本信息
-          asy(import(/* webpackChunkName: "views/basis/projectInfo" */'@/views/basis/projectInfo'),props)}
-        />
+        <Route path="/basis/projectInfo" component={ProjectInfo} />
 
-        <Route path="/basis/taxRate" render={(props)=> // 税率设置
-          asy(import(/* webpackChunkName: "views/basis/taxRate" */'@/views/basis/taxRate'),props)}
-        />
+        <Route path="/basis/taxRate" component={TaxRate}  />
 
-        <Route path="/basis/industry" render={(props)=> // 常用行业类别
-          asy(import(/* webpackChunkName: "views/basis/industry" */'@/views//basis/industry'),props)}
-        />
+        <Route path="/basis/industry" component={Industry}  />
 
 
-        <Route path="/mypanel/home0" render={(props)=> // 系统/表格页
-          asy(import(/* webpackChunkName: "views/system/mypanel" */'@/views/system/mypanel'),props)}
-        />
-        <Route path="/process/process" render={(props)=> // 系统/流程页
-          asy(import(/* webpackChunkName: "views/system/process" */'@/views/system/process'),props)}
-        />
-        <Route path="/systemSet/menu/menu" render={(props)=> // 系统/菜单
-          asy(import(/* webpackChunkName: "views/system/systemSet/menu" */'@/views/system/systemSet/menu'),props)}
-        />
-        <Route path="/details1/details" render={(props)=> // 系统/详情页1
-          asy(import(/* webpackChunkName: "views/system/details1" */'@/views/system/details1'),props)}
-        />
-        <Route path="/details2/details" render={(props)=> // 系统/详情页2
-          asy(import(/* webpackChunkName: "views/system/details2" */'@/views/system/details2'),props)}
-        />
-        <Route render={(props)=> // 404
-          asy(import(/* webpackChunkName: "views/system/404" */'@/views/system/404'),props)}
-        />
+        {/*工程管理*/}
+        <Route path="/engineering/receipt" component={Receipt}  />
+
+        <Route path="/engineering/payment/jointVenture" component={JointVenture}  />
+
+        <Route path="/engineering/payment/selfSupport" component={SelfSupport}  />
+
+        <Route path="/engineering/payment/paymentRecord" component={PaymentRecord}  />
+
+        <Route path="/engineering/invoicing" component={Invoicing}  />
+
+        <Route path="/engineering/items" component={Items}  />
+
+        <Route path="/engineering/prepayment" component={Prepayment}  />
+
+        <Route path="/engineering/projectInvoicing" component={ProjectInvoicing}  />
+
+        <Route path="/engineering/projectInput" component={ProjectInput}  />
+
+
+      {/*辅助查询*/}
+        <Route path="/auxiliaryQuery/ledger" component={Ledger}  />
+
+        <Route path="/auxiliaryQuery/tax" component={Tax}  />
+
+        <Route path="/auxiliaryQuery/payment" component={Payment}  />
+
+        {/*系统数据*/}
+        <Route path="/settings/user" component={User} />
+
+        <Route path="/settings/role" component={Role}  />
+
+        <Route path="/settings/department" component={Department}  />
+
+        <Route path="/settings/position" component={Position}  />
+
+        <Route path="/settings/dic" component={Dic}  />
+
+
+        {/*404*/}
+        <Route path="/404" component={My404} />
+
+
+
       </Switch>
     )
   }

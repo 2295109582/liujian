@@ -1,4 +1,40 @@
 
+*{
+  font-family: "微软雅黑";
+}
+
+[isreadonly]{
+  background-color: #f5f5f5 !important;
+}
+.ant-select-selection__rendered{
+  color:#555;
+}
+.ant-input-disabled{
+  color:#555 !important;
+  background-color: #f5f5f5 !important;
+}
+.ant-input-disabled:hover{
+  cursor: pointer !important;
+}
+textarea[readonly]{
+  background-color: #f5f5f5 !important;
+}
+.ant-select-selection__rendered:hover{
+  cursor: pointer;
+}
+.ant-form-item-control:hover{
+  cursor: pointer;
+}
+
+.ant-select.ant-select-disabled{
+  cursor: pointer;
+}
+
+.ant-select-selection.ant-select-selection--single{
+  cursor: pointer !important;
+}
+
+
 .clearfix:after {
   content: ".";
   display: block;
@@ -84,6 +120,10 @@ body {
   transform: translate(-50%,-50%) !important;
 }
 
+
+/* [readonly]{
+  background-color: #ddd !important;
+} */
 
 table{
   color:#888;
@@ -205,7 +245,7 @@ table{
   top: 0;
   right: 0;
   left: 0;
-  bottom: 34px;
+  bottom: 0; /*34px*/
   -webkit-overflow-scrolling:touch;
   /* background-color: #f5f5f5; */
   overflow-y: auto;
@@ -225,7 +265,8 @@ table{
 
 #logo {
   height: 52px;
-  background: url("../img/logo.svg") no-repeat center;
+  background: url("../img/logo3.png") no-repeat center;
+  background-size: 200px;
   margin:16px;
 }
 #projectName{

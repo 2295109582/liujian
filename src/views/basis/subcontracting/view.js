@@ -31,6 +31,7 @@ export default class View extends Component{
       },
       {
         name: "bankId",
+        dic:"bank_code",
         label: "开户行"
       },
       {
@@ -39,7 +40,8 @@ export default class View extends Component{
       },
       {
         name: "subunitType",
-        label: "分包类别"
+        dic:"subunit_sort",
+        label: "分包类别",
       },
       {
         name: "linkman",
@@ -67,7 +69,7 @@ export default class View extends Component{
   teams = {
     teamColumns : [
       { title: "班组名称",dataIndex: "teamName"},
-      { title: "班组类别", dataIndex: "teamSort"},
+      { title: "班组类别", dataIndex: "teamSort",dic:"team_sort"},
       { title: "班组负责人", dataIndex: "teamleader"},
       { title: "联系电话", dataIndex: "teamTel"}
     ]

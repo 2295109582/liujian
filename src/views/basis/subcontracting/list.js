@@ -6,7 +6,7 @@ import Form from './form';
 import View from './view';
 
 
-import { Divider} from 'antd';
+
 
 
 class List extends Component{
@@ -33,46 +33,56 @@ class List extends Component{
         },
       ],
       columns : [
-        {title: "分包单位名称",dataIndex: "subunitName"},
+        { title: "分包单位名称",dataIndex: "subunitName"},
         { title: "纳税人地址", dataIndex: "taxaddress"},
         { title: "纳税人识别号", dataIndex: "taxno"},
         { title: "电话", dataIndex: "tel"},
-        { title: "开户行", dataIndex: "bankId" },
+        { title: "开户行", dataIndex: "bankId",dic:"bank_code" },
         { title: "银行账号", dataIndex: "bankaccount" },
         { title: "备注信息", dataIndex: "remarks" }
       ],
-      action:{
-        edit:this.edit,
-        view:this.view
-      },
       toolbar : {
         add:{
           visible: () => true,
           click:this.add
+        },
+        edit:{
+          visible: (selectedRowKeys) => selectedRowKeys.length === 1,
+          click:this.edit
+        },
+        view:{
+          visible: (selectedRowKeys) => selectedRowKeys.length === 1,
+          click:this.view
         }
       }
     }
 
   }
 
-  view = (data)=>{
-    this.props.add(`查看${data.subunitName}`,{
+
+  swiper = ()=>{
+    this.refresh();
+  }
+
+  view = (selectedRowKeys,selectedRows, allData)=>{
+    let row = selectedRows[0];
+    this.props.add(`查看${row.subunitName}`,{
       view:View,
       props:{
-        params:{id:data.id},
+        params:{id:row.id},
         paramsUrl:"/subunit/detail"
       }
     });
   }
 
-  edit = (data) =>{
-    this.props.add(`编辑${data.subunitName}`,{
+  edit = (selectedRowKeys,selectedRows, allData) =>{
+    let row = selectedRows[0];
+    this.props.add(`编辑${row.subunitName}`,{
       view:Form,
       props:{
-        params:{id:data.id},
+        params:{id:row.id},
         paramsUrl:"/subunit/detail",
-        submitUrl:"/subunit/update",
-        refresh:this.refresh
+        submitUrl:"/subunit/update"
       }
     });
   }
@@ -81,8 +91,7 @@ class List extends Component{
     this.props.add('新增专业分包',{
       view:Form,
       props:{
-        submitUrl:"/subunit/add",
-        refresh:this.refresh
+        submitUrl:"/subunit/add"
       }
     });
   }
@@ -93,7 +102,7 @@ class List extends Component{
   }
 
   render(){
-    let {search,columns,toolbar,action} = this.state;
+    let {search,columns,toolbar} = this.state;
 
     return(
       <div className="content">
@@ -103,7 +112,6 @@ class List extends Component{
           deleteUrl="/subunit/delete"
           deleteKey="subunitName"
           columns={columns}
-          action={action}
           queryParams={()=>this.refs.search.getData()}
           toolbar={toolbar}
           ref="table"

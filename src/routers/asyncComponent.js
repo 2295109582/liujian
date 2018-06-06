@@ -6,7 +6,7 @@ function MyLoadingComponent({ error, pastDelay }) {
   if (error) {
     return (<div style={{position:'absolute',top:'50%',left:'50%',transform: 'translate(-50%,-50%)'}}>加载出错!</div>);
   } else if (pastDelay) {
-    return (<Spin style={{position:'absolute',top:'50%',left:'50%',transform: 'translate(-50%,-50%)'}}>加载中!</Spin>);
+    return (<Spin style={{position:'absolute',top:'50%',left:'50%',transform: 'translate(-50%,-50%)'}} />);
   } else {
     return null;
   }

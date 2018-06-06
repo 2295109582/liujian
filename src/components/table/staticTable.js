@@ -1,5 +1,5 @@
 import React,{Component} from 'react';
-import { Table,Modal,message,Divider } from 'antd';
+import { Table,Modal,Divider } from 'antd';
 import Title from '@c/title';
 import FormModal from '@c/form/formModal';
 import Bottons from '@c/bottons';
@@ -10,7 +10,7 @@ const confirm = Modal.confirm;
 class AppTable extends Component{
   constructor(){
     super(...arguments);
-    let {selectedRowKeys,dataSource,columns,toolbar,action} = this.props;
+    let {selectedRowKeys,dataSource,columns,toolbar,action,data} = this.props;
 
     this.index = 0;
 
@@ -30,7 +30,15 @@ class AppTable extends Component{
     }
 
 
-
+    data.push(
+      {
+        type: "input",
+        name: "key",
+        label: "key",
+        readonly:true,
+        visible:false
+      }
+    )
 
     dataSource.forEach((item,i)=>{
       if(item.id){
@@ -39,15 +47,29 @@ class AppTable extends Component{
       }
     })
 
+    columns.forEach((item,i)=>{
+      if(item.dic){
+        let dic = window.uc.dic(item.dic);
+        columns[i].render = (text)=>{
+          for(var i=0;i<dic.length;i++){
+            if(text === dic[i].value){
+              return dic[i].label;
+            }
+          }
+          return text;
+        }
+      }
+    })
 
 
 
 
     this.state = {
+      data,
       columns,
       dataSource,
       selectedRowKeys,
-      toolbar:toolbar===false?{}:{
+      toolbar:toolbar===false?{}:Object.assign({},{
         add:{
           visible: () => true,
           click:this.showForm
@@ -56,21 +78,34 @@ class AppTable extends Component{
           visible: (selectedRowKeys) => selectedRowKeys.length > 0,
           click:()=>this.delete()
         }
-      }
+      },toolbar)   
     }
 
 
 
   }
 
+  callback = ()=>{
+    let { callback } = this.props;
+    let { dataSource } = this.state;
+    callback(dataSource);
+  }
+
   componentDidMount(){
+
+    let { returnForm } = this.props;
+    let { form } = this.refs;
+    returnForm(form);
+
     this.saveTableData();
+    this.callback();
   }
 
   saveTableData = ()=>{
     let {saveTableData,name} = this.props;
-    let {dataSource} = this.state;
+    let dataSource = [...this.state.dataSource];
     saveTableData&&saveTableData(name,dataSource);
+    this.callback();
   }
 
   setDataSource = (data)=>{
@@ -81,27 +116,34 @@ class AppTable extends Component{
       }
     })
 
-
     this.setState({dataSource:data},()=>this.saveTableData());
   }
 
 
 
+
+
   showForm = ()=>{   //显示模态表单
+
+    let {defaultValue} = this.props;
+
     let {title} = this.props;
     let {form} = this.refs;
-    form.show({
+    form.setData({
       title: `新增${title}`
-    });
+    },defaultValue());
   }
 
   edit = (row)=>{  //编辑
+
+
     let {title} = this.props;
     let {form} = this.refs;
     form.setData({
       title: `编辑${title}`
     },row);
   }
+
 
   view = ()=>{   //查看
 
@@ -138,8 +180,11 @@ class AppTable extends Component{
   }
 
 
-  addData = (values)=>{ //设置数据
+  removeData = ()=>{
+    this.setState({dataSource:[]},()=>this.callback());
+  }
 
+  addData = (values)=>{ //设置数据
     let dataSource = this.state.dataSource===undefined?[]:[...this.state.dataSource];
         if(values.key){
           dataSource.forEach((item,i)=>{
@@ -196,13 +241,14 @@ class AppTable extends Component{
 
 
   render(){
-    let {selectedRowKeys,dataSource,columns,toolbar} = this.state;
-    let {expandedRowRender,size,title,data,check,pagination} = this.props;
+    let {selectedRowKeys,dataSource,columns,toolbar,data} = this.state;
+    let {expandedRowRender,size,title,check,pagination} = this.props;
     const rowSelection = check===false?null:{
       selectedRowKeys,
       onChange: this.onSelectedRowKeysChange
     };
 
+    console.log(dataSource)
 
     return (
       <div>
@@ -230,6 +276,9 @@ AppTable.defaultProps = {
   data:[], //弹出框增加的数据
   columns:[],  //展示的列,父级带入
   dataSource:[],  //展示的内容,动态获取
+  defaultValue:()=>{}, //新增时设置默认值
+  returnForm:()=>{}, //返回表单对象
+  callback:()=>{},  //数据改变时执行的函数
   size:"middle",   //表格大小,default middle small
   bordered:false,  //边框
   onChange:()=>{}, //勾选改变时触发的的函数
